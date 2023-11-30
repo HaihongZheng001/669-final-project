@@ -5,7 +5,6 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { useState } from "react";
 
-
 import HomeScreen from './screens/HomeScreen';
 import CourseReviewsScreen from './screens/CourseReviewsScreen';
 import EditReviewScreen from './screens/EditReviewScreen';
@@ -13,8 +12,6 @@ import AccountScreen from './screens/AccountScreen';
 import EditProfileScreen from './screens/EditProfileScreen';
 import MyReviewsScreen from './screens/MyReviewsScreen';
 import LoginScreen from './screens/LoginScreen';
-import SignUpScreen from './screens/SignUpScreen';
-
 
 import { rootReducer } from './data/Reducer';
 import { configureStore } from '@reduxjs/toolkit';
@@ -27,12 +24,10 @@ const store = configureStore({
     reducer: rootReducer,
 });
 
-const Stack = createNativeStackNavigator();
-const Tab = createBottomTabNavigator();
-const InnerStack = createNativeStackNavigator();
-
 
 function MainAppStack() {
+    const Tab = createBottomTabNavigator();
+
     return (
         <Tab.Navigator screenOptions={{ headerShown: false }}>
             <Tab.Screen 
@@ -61,35 +56,39 @@ function MainAppStack() {
 }
 
 function HomeTabStack() {
+    const HomeStack = createNativeStackNavigator();
+
     return (
-        <InnerStack.Navigator initialRouteName='HomePage' screenOptions={{ headerShown: false }}>
-            <Stack.Screen name='HomePage' component={HomeScreen}/>
-            <Stack.Screen name='CourseReviews' component={CourseReviewsScreen}/>
-            <Stack.Screen name='EditRview' component={EditReviewScreen}/>
-        </InnerStack.Navigator>
+        <HomeStack.Navigator initialRouteName='HomePage' screenOptions={{ headerShown: false }}>
+            <HomeStack.Screen name='HomePage' component={HomeScreen}/>
+            <HomeStack.Screen name='CourseReviews' component={CourseReviewsScreen}/>
+            <HomeStack.Screen name='EditRview' component={EditReviewScreen}/>
+        </HomeStack.Navigator>
     )
 }
 
 function AccountTabStack() {
+    const AccountStack = createNativeStackNavigator();
+
     return (
-        <InnerStack.Navigator initialRouteName='AccountPage' screenOptions={{ headerShown: false }}>
-            <Stack.Screen name='AccountPage' component={AccountScreen}/>
-            <Stack.Screen name='EditProfile' component={EditProfileScreen}/>
-            <Stack.Screen name='MyReviews' component={MyReviewsScreen}/>
-        </InnerStack.Navigator>
+        <AccountStack.Navigator initialRouteName='AccountPage' screenOptions={{ headerShown: false }}>
+            <AccountStack.Screen name='AccountPage' component={AccountScreen}/>
+            <AccountStack.Screen name='EditProfile' component={EditProfileScreen}/>
+            <AccountStack.Screen name='MyReviews' component={MyReviewsScreen}/>
+        </AccountStack.Navigator>
     )
 }
 
 
 function AppContainer() {
     const [isAuthenticated, setIsAuthenticated] = useState(false)
+    const Stack = createNativeStackNavigator();
 
     return(
         <Provider store={store}>
             <NavigationContainer>
                 <Stack.Navigator>
                     <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
-                    <Stack.Screen name="SignUp" component={SignUpScreen} options={{ headerShown: false }} />
                     <Stack.Screen
                         name="MainApp"
                         component={MainAppStack}
@@ -103,23 +102,5 @@ function AppContainer() {
   }
   
   export default AppContainer;
-
-  // function AuthStack() {
-//     return (
-//         <Stack.Navigator initialRouteName='Login' screenOptions={{ headerShown: false }}>
-//           <Stack.Screen name="Login" component={LoginScreen} />
-//           <Stack.Screen name="SignUp" component={SignUpScreen} />
-//         </Stack.Navigator>
-//       );
-// }
-
-// function MainAppStack() {
-//     return (
-//         <Tabs.Navigator >
-//                 <Tabs.Screen name="Home" component={HomeTabStack} />
-//                 <Tabs.Screen name="Profile" component={AccountTabStack} />
-//         </Tabs.Navigator>
-//     )
-// }
 
 

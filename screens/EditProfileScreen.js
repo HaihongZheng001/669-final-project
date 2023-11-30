@@ -4,7 +4,7 @@ import { View, Text, StyleSheet } from 'react-native';
 function AppScreen() {
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>Edit Profile page</Text>
+      <Text style={styles.text}>Edit Profile page!!!</Text>
     </View>
   );
 }

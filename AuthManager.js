@@ -37,7 +37,6 @@ try {
 const signIn = async (email, password) => {
     await signInWithEmailAndPassword(auth, email, password);
 }
-  
 
 
 const signOut = async () => {
@@ -60,20 +59,18 @@ const getAuthUser = () => {
 let unsubscribeFromAuthChanges = undefined;
 
 const subscribeToAuthChanges = (navigation) => {
-    
     if (unsubscribeFromAuthChanges) {
         unsubscribeFromAuthChanges();
     }
     unsubscribeFromAuthChanges =  onAuthStateChanged(auth, (user) => {
         if (user) {
             console.log('signed in! user:', user);
-            navigation.navigate('Home');
+            navigation.navigate('MainApp', { screen: 'HomePage' });
         } else {
             console.log('user is signed out!');
             navigation.navigate('Login');
         }
-        })
-    }
+    })
+}
 
   export { signIn, signOut, signUp, getAuthUser, subscribeToAuthChanges }
-  

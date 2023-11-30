@@ -10,10 +10,12 @@ import { addUser } from '../data/Actions';
 function SigninBox({navigation}) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [confirmPassword, setComfirmPassword] = useState('');
+
   
     return (
       <View style={styles.loginContainer}>
-        <Text style={styles.loginHeaderText}>Sign In</Text>
+        <Text style={styles.loginHeaderText}>RateMyCouses</Text>
         <View style={styles.loginRow}>
           <View style={styles.loginLabelContainer}>
             <Text style={styles.loginLabelText}>Email: </Text>
@@ -77,10 +79,10 @@ function SignupBox({navigation}) {
   
     return (
       <View style={styles.loginContainer}>
-        <Text style={styles.loginHeaderText}>Sign Up</Text>
+        <Text style={styles.loginHeaderText}>Create an account</Text>
         <View style={styles.loginRow}>
           <View style={styles.loginLabelContainer}>
-            <Text style={styles.loginLabelText}>Display Name: </Text>
+            <Text style={styles.loginLabelText}>Username: </Text>
           </View>
           <View style={styles.loginInputContainer}>
             <TextInput 
@@ -144,13 +146,19 @@ function SignupBox({navigation}) {
     );
   }
 
-function LoginScreen({navigation}) {
+function LoginScreen({navigation, route}) {
 
   const [loginMode, setLoginMode] = useState(true);
 
   useEffect(()=> {
     subscribeToAuthChanges(navigation);
   }, []);
+
+
+  useEffect(()=>{
+    console.log("route",route)
+  }
+  ,[navigation])
 
 
   return (
@@ -166,25 +174,17 @@ function LoginScreen({navigation}) {
       </View>
 
         <View styles={styles.modeSwitchContainer}>
-         
-
-           
-            
-        </View>
-        <View>
-        { loginMode ? 
-            <Text style={styles.item}>New user? 
+            { loginMode ? 
+            <Text>Don't have an account?
                 <Text 
                 onPress={()=>{setLoginMode(!loginMode)}} 
-                style={{color: 'blue'}}> Sign up </Text> 
-                instead!
+                style={{color: 'blue'}}> Sign up here</Text> 
             </Text>
             :
-            <Text style={styles.item} >Returning user? 
+            <Text>Already have an account? 
                 <Text 
                 onPress={()=>{setLoginMode(!loginMode)}} 
-                style={{color: 'blue'}}> Sign in </Text> 
-                instead!
+                style={{color: 'blue'}}> Login here </Text> 
             </Text>
             }
         </View>
@@ -272,8 +272,5 @@ const styles = StyleSheet.create({
       justifyContent: 'center',
       width: '100%', 
     },
-    item: {
-        marginTop: '10%'
-    }
   });
   export default LoginScreen;
