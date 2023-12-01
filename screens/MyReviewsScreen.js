@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 
-function AppScreen() {
+function MyReviewsScreen() {
   return (
     <View style={styles.container}>
       <Text style={styles.text}>My Reviews</Text>
@@ -21,4 +21,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default AppScreen;
+export default MyReviewsScreen;

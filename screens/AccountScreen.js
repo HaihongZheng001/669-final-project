@@ -8,7 +8,7 @@ import { useEffect } from 'react';
 import { subscribeToUserUpdates } from '../data/Actions';
 
 
-function AppScreen() {
+function AccountScreen() {
   return (
     <View style={styles.container}>
       <Text style={styles.text}>Account Page</Text>
@@ -40,4 +40,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default AppScreen;
+export default AccountScreen;

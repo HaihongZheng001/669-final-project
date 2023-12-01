@@ -1,7 +1,7 @@
 import {useEffect} from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 
-function AppScreen({route, navigation}) {
+function HomeScreen({route, navigation}) {
   useEffect(()=>{
     console.log("route",route)
   }
@@ -25,4 +25,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default AppScreen;
+export default HomeScreen;
