@@ -1,34 +1,47 @@
-
-// data/Reducer.js
 const ADD_USER = 'ADD_USER';
 const LOAD_USERS = 'LOAD_USERS';
+const UPDATE_USER = 'UPDATE_USER';
 
 
-const loadUsers = (state, payload) => {
-    return {
-      ...state, 
-      users: [...payload.users]
-    }
+const initialState = {
+  users: [],
+}
+
+const addUser = (state, newUser) => {
+  let user = {
+    ...newUser,
   }
-
-const addUser = (state, payload) => {
-  console.log('adding user', state);
   return {
     ...state, 
-    users: state.users.concat({...payload.user})
+    users: [...state.users, user]
+  };
+}
+
+const loadUsers = (state, users) => {
+  return {
+    ...state, 
+    users: [...users]
   }
 }
-const initialState = {
-  users: []
+
+const updateUser = (state, userId, updatedUser) => {
+  let newUser = {...updatedUser};
+  return {
+    ...state, 
+    users: state.users.map(user=>user.id === userId ? newUser : user)
+  };
 }
+
 const rootReducer = (state=initialState, action) => {
   switch (action.type) {
     case LOAD_USERS:
-        return loadUsers(state, action.payload);
+      return loadUsers(state, action.payload.newUsers);
     case ADD_USER:
-      return addUser(state, action.payload);
+      return addUser(state, action.payload.user);
+    case UPDATE_USER:
+      return updateUser(state, action.payload.id, action.payload.user);
     default:
       return state;
   }
 }
-export { rootReducer, ADD_USER, LOAD_USERS };
+export { rootReducer, ADD_USER, LOAD_USERS, UPDATE_USER };
