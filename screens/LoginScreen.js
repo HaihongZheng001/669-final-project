@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { View, Text, TextInput, StyleSheet, Alert } from 'react-native';
 import { Button } from '@rneui/themed';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { signIn, signUp, subscribeToAuthChanges } from '../AuthManager';
 import { addUser } from '../data/Actions';
 
@@ -10,8 +10,6 @@ import { addUser } from '../data/Actions';
 function SigninBox({navigation}) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [confirmPassword, setComfirmPassword] = useState('');
-
   
     return (
       <View style={styles.loginContainer}>
@@ -49,16 +47,12 @@ function SigninBox({navigation}) {
         </View>
         <View style={styles.loginRow}>
           <Button
-            // onPress={() => {
-            //   navigation.navigate("Home");
-            // }}
             onPress={async () => {
-                try {
-                    await signIn(email, password);
-                    // navigation.navigate('Home');
-                } catch(error) {
-                    Alert.alert("Sign In Error", error.message,[{ text: "OK" }])
-                }
+              try {
+                  await signIn(email, password);
+              } catch(error) {
+                  Alert.alert("Sign In Error", error.message,[{ text: "OK" }])
+              }
             }}
           >
             Sign In
@@ -73,10 +67,11 @@ function SigninBox({navigation}) {
 function SignupBox({navigation}) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [displayName, setDisplayName] = useState('');
-    const dispatch = useDispatch(); // make sure it's in SignupBox()!!!
+    const [name, setName] = useState('');
+    const [newUser, setNewUser] = useState({})
 
-  
+    const dispatch = useDispatch();
+
     return (
       <View style={styles.loginContainer}>
         <Text style={styles.loginHeaderText}>Create an account</Text>
@@ -87,11 +82,10 @@ function SignupBox({navigation}) {
           <View style={styles.loginInputContainer}>
             <TextInput 
               style={styles.loginInputBox}
-              placeholder='enter display name' 
               autoCapitalize='none'
               spellCheck={false}
-              onChangeText={text=>setDisplayName(text)}
-              value={displayName}
+              onChangeText={text=>setName(text)}
+              value={name}
             />
           </View>
         </View>
@@ -102,7 +96,6 @@ function SignupBox({navigation}) {
           <View style={styles.loginInputContainer}>
             <TextInput 
               style={styles.loginInputBox}
-              placeholder='enter email address' 
               autoCapitalize='none'
               spellCheck={false}
               onChangeText={text=>setEmail(text)}
@@ -117,7 +110,6 @@ function SignupBox({navigation}) {
           <View style={styles.loginInputContainer}>
             <TextInput 
               style={styles.loginInputBox}
-              placeholder='enter password' 
               autoCapitalize='none'
               spellCheck={false}
               secureTextEntry={true}
@@ -130,10 +122,11 @@ function SignupBox({navigation}) {
           <Button
             onPress={async () => {
               try {
-                const newUser = await signUp(displayName, email
-                    , password);
-                dispatch(addUser(newUser));
-                // navigation.navigate('Home');
+                const newUser = await signUp(name, email, password, isNewUser=true);
+                dispatch(addUser({
+                  name: name,
+                  email: email
+                }));
               } catch(error) {
                 Alert.alert("Sign Up Error", error.message, [{ text: "OK" }])
               }
