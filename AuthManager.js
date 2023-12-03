@@ -4,79 +4,85 @@ import { getApps, initializeApp } from 'firebase/app';
 import { firebaseConfig } from './Secrets';
 
 import { getAuth, signInWithEmailAndPassword,
-    createUserWithEmailAndPassword, 
-    updateProfile,
-    signOut as fbSignOut, 
-    initializeAuth, 
-    getReactNativePersistence,
-    onAuthStateChanged,
-  } from 'firebase/auth';
+  createUserWithEmailAndPassword, 
+  updateProfile,
+  signOut as fbSignOut, 
+  initializeAuth, 
+  getReactNativePersistence,
+  onAuthStateChanged,
+} from 'firebase/auth';
 
-  import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
+import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
+import { app, db, auth } from './firebase';
 
 
-let app, auth;
-// this guards against initializing more than one "App"
-const apps = getApps();
-if (apps.length == 0) { 
-  app = initializeApp(firebaseConfig);
-} else {
-  app = apps[0];
-}
 
-// auth = getAuth(app);
-try {
-    auth = initializeAuth(app, {
-      persistence: getReactNativePersistence(ReactNativeAsyncStorage)
-    });
-  } catch (error) {
-    auth = getAuth(app); // if auth already initialized
-}
+// let app, auth;
+// // this guards against initializing more than one "App"
+// const apps = getApps();
+// if (apps.length == 0) { 
+//   app = initializeApp(firebaseConfig);
+// } else {
+//   app = apps[0];
+// }
+
+// // auth = getAuth(app);
+// try {
+//   auth = initializeAuth(app, {
+//     persistence: getReactNativePersistence(ReactNativeAsyncStorage)
+//   });
+// } catch (error) {
+//   auth = getAuth(app); // if auth already initialized
+// }
 
 
 const signIn = async (email, password) => {
-    await signInWithEmailAndPassword(auth, email, password);
+  await signInWithEmailAndPassword(auth, email, password);
+
 }
 
-
 const signOut = async () => {
-    await fbSignOut(auth);
-  }
+  await fbSignOut(auth);
+}
 
-
-const signUp = async (displayName, email, password) => {
+const signUp = async (name, email, password) => {
     const userCred = await createUserWithEmailAndPassword(auth, email, password);
-    await updateProfile(userCred.user, {displayName: displayName});
+    await updateProfile(userCred.user, {name: name});
     return userCred.user;
-  }
-
+}
 
 const getAuthUser = () => {
-    return auth.currentUser;
-  }
-
+  return auth.currentUser;
+}
 
 let unsubscribeFromAuthChanges = undefined;
 
 const subscribeToAuthChanges = (navigation) => {
-    if (unsubscribeFromAuthChanges) {
-        unsubscribeFromAuthChanges();
-    }
-    unsubscribeFromAuthChanges =  onAuthStateChanged(auth, (user) => {
-        if (user) {
-            console.log('signed in! user:', user);
-            // navigation.navigate('MainApp', { screen: 'HomePage' });
-            navigation.navigate('MainApp', { 
-              screen: 'Account', 
-              params: { 
-                screen: 'EditProfile' 
+  if (unsubscribeFromAuthChanges) {
+      unsubscribeFromAuthChanges();
+  }
+  unsubscribeFromAuthChanges =  onAuthStateChanged(auth, (user) => {
+      if (user) {
+        // navigation.navigate('MainApp', { 
+        //   screen: 'Home', 
+        //   params: { 
+        //     screen: 'HomePage',
+        //   }
+        // });
+          navigation.navigate('MainApp', { 
+            screen: 'Home', 
+            params: { 
+              screen: 'HomePage',
+              params: {
+                email: user.email,
               }
-            });
-        } else {
-            console.log('user is signed out!');
-            navigation.navigate('Login');
-        }
-    })
+            }
+          });
+      } else {
+          // console.log('user is signed out!');
+          navigation.navigate('Login');
+      }
+  })
 }
 
-  export { signIn, signOut, signUp, getAuthUser, subscribeToAuthChanges }
+export { signIn, signOut, signUp, getAuthUser, subscribeToAuthChanges }
