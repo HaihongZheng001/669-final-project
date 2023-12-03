@@ -35,10 +35,9 @@ function MainAppStack() {
                 component={HomeTabStack}
                 options={{
                     tabBarIcon: ({focused, color, size}) => {
-                      return (
-                        <MaterialIcons name="account-circle" size={24} color="black" />
-                      );
-                    }
+                        return (
+                          <Entypo name="home" size={24} color="black" />                      );
+                      }
                   }}
                 />
             <Tab.Screen 
@@ -46,9 +45,10 @@ function MainAppStack() {
                 component={AccountTabStack} 
                 options={{
                     tabBarIcon: ({focused, color, size}) => {
-                      return (
-                        <Entypo name="home" size={24} color="black" />                      );
-                    }
+                        return (
+                          <MaterialIcons name="account-circle" size={24} color="black" />
+                        );
+                      }
                 }}
             />
         </Tab.Navigator>
@@ -62,7 +62,7 @@ function HomeTabStack() {
         <HomeStack.Navigator initialRouteName='HomePage' screenOptions={{ headerShown: false }}>
             <HomeStack.Screen name='HomePage' component={HomeScreen}/>
             <HomeStack.Screen name='CourseReviews' component={CourseReviewsScreen}/>
-            <HomeStack.Screen name='EditRview' component={EditReviewScreen}/>
+            <HomeStack.Screen name='EditReview' component={EditReviewScreen}/>
         </HomeStack.Navigator>
     )
 }
@@ -94,7 +94,6 @@ function AppContainer() {
                         component={MainAppStack}
                         options={{ headerShown: false }}
                     />
-                    
                 </Stack.Navigator>
             </NavigationContainer>
         </Provider>
