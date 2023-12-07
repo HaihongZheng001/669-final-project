@@ -1,10 +1,12 @@
 
 import { useState, useEffect } from 'react';
-import { View, Text, TextInput, StyleSheet, Alert } from 'react-native';
+import { View, Text, TextInput, StyleSheet, Alert, Keyboard, TouchableWithoutFeedback,Image, KeyboardAvoidingView } from 'react-native';
 import { Button } from '@rneui/themed';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { signIn, signUp, subscribeToAuthChanges } from '../AuthManager';
 import { addUser } from '../data/Actions';
+import logo from '../assets/logo33.png';
+
 
 
 function SigninBox({navigation}) {
@@ -12,8 +14,13 @@ function SigninBox({navigation}) {
     const [password, setPassword] = useState('');
   
     return (
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+
       <View style={styles.loginContainer}>
-        <Text style={styles.loginHeaderText}>RateMyCouses</Text>
+        <View style={styles.loginRow}>
+        <Image source={logo} style={{ width: 300, height: 200 }}/>
+        </View>
+        <Text style={styles.loginHeaderText}>Sign In</Text>
         <View style={styles.loginRow}>
           <View style={styles.loginLabelContainer}>
             <Text style={styles.loginLabelText}>Email: </Text>
@@ -47,18 +54,23 @@ function SigninBox({navigation}) {
         </View>
         <View style={styles.loginRow}>
           <Button
+            // onPress={() => {
+            //   navigation.navigate("Home");
+            // }}
             onPress={async () => {
-              try {
-                  await signIn(email, password);
-              } catch(error) {
-                  Alert.alert("Sign In Error", error.message,[{ text: "OK" }])
-              }
+                try {
+                    await signIn(email, password);
+                    // navigation.navigate('Home');
+                } catch(error) {
+                    Alert.alert("Sign In Error", error.message,[{ text: "OK" }])
+                }
             }}
           >
             Sign In
           </Button>  
         </View>
       </View>
+      </TouchableWithoutFeedback>
     );
   }
 
@@ -68,20 +80,25 @@ function SignupBox({navigation}) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [name, setName] = useState('');
-    const [newUser, setNewUser] = useState({})
+    const dispatch = useDispatch(); // make sure it's in SignupBox()!!!
+  
 
-    const dispatch = useDispatch();
-
+  
     return (
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View style={styles.loginContainer}>
-        <Text style={styles.loginHeaderText}>Create an account</Text>
+         <View style={styles.loginRow}>
+          <Image source={logo} style={{ width: 300, height: 200 }}/>
+        </View>
+        <Text style={styles.loginHeaderText}>Sign Up</Text>
         <View style={styles.loginRow}>
           <View style={styles.loginLabelContainer}>
-            <Text style={styles.loginLabelText}>Username: </Text>
+            <Text style={styles.loginLabelText}>Name: </Text>
           </View>
           <View style={styles.loginInputContainer}>
             <TextInput 
               style={styles.loginInputBox}
+              placeholder='enter display name' 
               autoCapitalize='none'
               spellCheck={false}
               onChangeText={text=>setName(text)}
@@ -96,6 +113,7 @@ function SignupBox({navigation}) {
           <View style={styles.loginInputContainer}>
             <TextInput 
               style={styles.loginInputBox}
+              placeholder='enter email address' 
               autoCapitalize='none'
               spellCheck={false}
               onChangeText={text=>setEmail(text)}
@@ -103,6 +121,11 @@ function SignupBox({navigation}) {
             />
           </View>
         </View>
+        {/* <KeyboardAvoidingView
+           behavior='padding'
+           keyboardVerticalOffset={200}
+           style={styles.container}
+        > */}
         <View style={styles.loginRow}>
           <View style={styles.loginLabelContainer}>
             <Text style={styles.loginLabelText}>Password: </Text>
@@ -110,6 +133,7 @@ function SignupBox({navigation}) {
           <View style={styles.loginInputContainer}>
             <TextInput 
               style={styles.loginInputBox}
+              placeholder='enter password' 
               autoCapitalize='none'
               spellCheck={false}
               secureTextEntry={true}
@@ -118,15 +142,16 @@ function SignupBox({navigation}) {
             />
           </View>
         </View>
+                {/* </KeyboardAvoidingView> */}
+
         <View style={styles.loginRow}>
           <Button
             onPress={async () => {
               try {
-                const newUser = await signUp(name, email, password, isNewUser=true);
-                dispatch(addUser({
-                  name: name,
-                  email: email
-                }));
+                const newUser = await signUp(name, email, password);
+                const uid = newUser.uid
+                dispatch(addUser({name, email, uid}));
+                navigation.navigate('Account');
               } catch(error) {
                 Alert.alert("Sign Up Error", error.message, [{ text: "OK" }])
               }
@@ -136,22 +161,21 @@ function SignupBox({navigation}) {
           </Button>  
         </View>
       </View>
+      </TouchableWithoutFeedback>
     );
   }
 
-function LoginScreen({navigation, route}) {
+function LoginScreen({navigation}) {
+  
 
   const [loginMode, setLoginMode] = useState(true);
+
+
+
 
   useEffect(()=> {
     subscribeToAuthChanges(navigation);
   }, []);
-
-
-  useEffect(()=>{
-    console.log("route",route)
-  }
-  ,[navigation])
 
 
   return (
@@ -168,18 +192,25 @@ function LoginScreen({navigation, route}) {
 
         <View styles={styles.modeSwitchContainer}>
             { loginMode ? 
-            <Text>Don't have an account?
+            <Text style={{marginBottom: '5%'}}>New user? 
                 <Text 
                 onPress={()=>{setLoginMode(!loginMode)}} 
-                style={{color: 'blue'}}> Sign up here</Text> 
+                style={{color: 'blue'}}> Sign up </Text> 
+                instead!
             </Text>
             :
-            <Text>Already have an account? 
+            <Text>Returning user? 
                 <Text 
                 onPress={()=>{setLoginMode(!loginMode)}} 
-                style={{color: 'blue'}}> Login here </Text> 
+                style={{color: 'blue', marginTop: '10%'}}> Sign in </Text> 
+                instead!
             </Text>
             }
+
+            {/* <Button
+                title='Just go in anyway'
+                onPress={()=>navigation.navigate('Home')}
+             /> */}
         </View>
     </View>
   );
@@ -191,12 +222,14 @@ const styles = StyleSheet.create({
       flex: 1,
       backgroundColor: '#fff',
       alignItems: 'center',
-      justifyContent: 'center',
+      // justifyContent: 'center',
+      // backgroundColor:'pink'
     },
     bodyContainer: {
-      flex: 0.5,
+      flex: 0.8,
       justifyContent: 'center',
       alignItems: 'center',
+      // backgroundColor:'lightblue',
     },
     loginContainer: {
       flex: 1,
@@ -265,5 +298,6 @@ const styles = StyleSheet.create({
       justifyContent: 'center',
       width: '100%', 
     },
+
   });
   export default LoginScreen;
