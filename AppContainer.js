@@ -19,6 +19,10 @@ import { Provider } from 'react-redux';
 
 import { MaterialIcons } from '@expo/vector-icons';
 import { Entypo } from '@expo/vector-icons';
+import { FAB } from 'react-native-paper';
+import { Ionicons } from '@expo/vector-icons';
+import { View } from "react-native";
+
 
 const store = configureStore({
     reducer: rootReducer,
@@ -28,25 +32,51 @@ const store = configureStore({
 function MainAppStack() {
     const Tab = createBottomTabNavigator();
 
+    const iconStyle = (focused) => ({
+        shadowColor: focused ? '#000' : 'transparent', 
+        shadowOffset: { width: 0, height: 0 },
+        shadowOpacity: focused ? 0.3 : 0,
+        shadowRadius: focused ? 3 : 0,
+        elevation: focused ? 5 : 0, 
+    });
+
     return (
-        <Tab.Navigator screenOptions={{ headerShown: false }}>
+        <Tab.Navigator screenOptions={{ headerShown: false, tabBarShowLabel: false }}>
             <Tab.Screen 
                 name="Home" 
                 component={HomeTabStack}
+                listeners={({ navigation }) => ({
+                    focus: () => {
+                        // Resetting the AccountStack to its first screen when the tab is focused
+                        navigation.navigate('Home', { screen: 'HomePage' });
+                    },
+                })}
                 options={{
                     tabBarIcon: ({focused, color, size}) => {
                         return (
-                          <Entypo name="home" size={24} color="black" />                      );
+                        <View style={iconStyle(focused)}>
+                          <Entypo name="home" size={24} color={focused ? "#39A7FF" : "grey"} /> 
+                        </View>                     
+                        );
                       }
                   }}
                 />
             <Tab.Screen 
                 name="Account" 
                 component={AccountTabStack} 
+                listeners={({ navigation }) => ({
+                    focus: () => {
+                        // Resetting the AccountStack to its first screen when the tab is focused
+                        navigation.navigate('Account', { screen: 'AccountPage' });
+                    },
+                })}
                 options={{
                     tabBarIcon: ({focused, color, size}) => {
                         return (
-                          <MaterialIcons name="account-circle" size={24} color="black" />
+                            <View style={iconStyle(focused)}>
+                                <Ionicons name="person" size={23} color={focused ? "#39A7FF" : "grey"} />
+                            </View>                     
+
                         );
                       }
                 }}
