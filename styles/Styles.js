@@ -4,11 +4,13 @@ export const generalStyles = {
         backgroundColor: '#fff',
         alignItems: 'center',
         justifyContent: 'center',
+        // backgroundColor: '#F9F5EB'
+
     },
     header: {
-        flex: 0.15,
+        flex: 0.1,
         flexDirection: 'row',
-        backgroundColor: 'lightblue',
+        backgroundColor: 'white',
         alignItems: 'flex-end',
         justifyContent: 'space-between',
         width: '100%',
@@ -45,8 +47,9 @@ export const generalStyles = {
 
     //body styling
     body: {
-        flex: 0.85,
-        backgroundColor: 'white',
+        flex: 0.9,
+        // backgroundColor: 'white',
+        // backgroundColor: '#F5F7F8',
         width: '100%',
         padding: '5%',
     },
@@ -140,7 +143,13 @@ export const generalStyles = {
         fontSize: 18,
         fontWeight: 'bold',
         color: 'black'
-    }
+    },
+    // dropdownBox: {
+    //     backgroundColor: '#FFFFFF',
+    //     padding: '2%',
+    //     borderRadius: '5%',
+    //     flex: 0.5
+    // }
 
 
 }
