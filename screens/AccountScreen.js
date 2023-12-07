@@ -61,7 +61,7 @@ function AccountScreen(props) {
           </View>
           <View style={styles.sectionTitleRight}>
             <TouchableOpacity style={styles.topLeftOpacityContainer} onPress={() => {
-                navigation.navigate('EditProfile');
+                navigation.navigate('EditProfile')
             }}>
               <MaterialIcons name="edit" size={24} color="black" />
             </TouchableOpacity>
@@ -71,7 +71,7 @@ function AccountScreen(props) {
 
         <View style={styles.accountItemContainer}>
           <View style={styles.iconContainer}>
-            <MaterialIcons name="email" size={26} color="black" />
+            <MaterialIcons name="email" size={26} color="#39A7FF" />
           </View>
           <View style={styles.infoContainer}>
             <Text style={styles.itemTitleText}>Email</Text>
@@ -82,7 +82,7 @@ function AccountScreen(props) {
 
         <View style={styles.accountItemContainer}>
           <View style={styles.iconContainer}>
-            <MaterialCommunityIcons name="office-building" size={32} color="black" />
+            <MaterialCommunityIcons name="office-building" size={32} color="#39A7FF" />
           </View>
           <View style={styles.infoContainer}>
             <Text style={styles.itemTitleText}>Department</Text>
@@ -93,7 +93,7 @@ function AccountScreen(props) {
 
         <View style={styles.accountItemContainer}>
           <View style={styles.iconContainer}>
-            <FontAwesome5 name="book-reader" size={24} color="black" />
+            <FontAwesome5 name="book-reader" size={24} color="#39A7FF" />
           </View>
           <View style={styles.infoContainer}>
             <Text style={styles.itemTitleText}>Current Major</Text>
@@ -103,7 +103,7 @@ function AccountScreen(props) {
 
         <View style={styles.accountItemContainer}>
           <View style={styles.iconContainer}>
-            <Ionicons name="school" size={26} color="black" />
+            <Ionicons name="school" size={26} color="#39A7FF" />
           </View>
           <View style={styles.infoContainer}>
             <Text style={styles.itemTitleText}>Undergraduate Major</Text>
@@ -120,20 +120,23 @@ function AccountScreen(props) {
             </View>
             <View style={styles.sectionTitleRight}></View>
         </View>
+        <TouchableOpacity
+          onPress={() => navigation.navigate('MyReviews')}
+        >
+          <View style={styles.accountItemContainer}>
+            <View style={styles.iconContainer}>
+              <MaterialIcons name="rate-review" size={24} color="#39A7FF" />
+            </View>
+              <View style={styles.infoContainer}>
+                <Text style={styles.itemTitleText}>Total Reviews</Text>
+                <Text style={styles.itemDetailText}>Click to view details</Text>
 
-        <View style={styles.accountItemContainer}>
-          <View style={styles.iconContainer}>
-            <MaterialIcons name="rate-review" size={24} color="black" />
+              </View>
+              <View style={[styles.iconContainer, {backgroundColor: 'white'}]}>
+                <Ionicons name="md-chevron-forward" size={24} color="black" />
+              </View>
           </View>
-          <View style={styles.infoContainer}>
-            <Text style={styles.itemTitleText}>Total Reviews</Text>
-            <Text style={styles.itemDetailText}>Click to view details</Text>
-
-          </View>
-          <View style={[styles.iconContainer, {backgroundColor: 'white'}]}>
-            <Ionicons name="md-chevron-forward" size={24} color="black" />
-          </View>
-        </View>
+        </TouchableOpacity>
           
 
       </View>
@@ -185,14 +188,13 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     paddingBottom: '3%',
     marginBottom:'3%',
-    marginTop:'3%'
-
+    marginTop:'3%',
   },
   iconContainer: {
     width: 50,  // Diameter of the circle
     height: 50, // Same as width
     borderRadius: 25, // Half of width/height
-    backgroundColor: 'lightgrey', // Circle color
+    backgroundColor: '#EEF5FF', // Circle color
     justifyContent: 'center', // Center the icon horizontally
     alignItems: 'center', 
   },
