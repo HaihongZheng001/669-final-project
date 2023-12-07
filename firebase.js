@@ -1,6 +1,6 @@
 // firebase.js
 import { initializeApp, getApps } from 'firebase/app';
-import { getFirestore } from 'firebase/firestore';
+import { getFirestore, arrayUnion } from 'firebase/firestore';
 import { getAuth, initializeAuth, getReactNativePersistence } from 'firebase/auth';
 import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
 import { firebaseConfig } from './Secrets';
@@ -24,4 +24,4 @@ try {
   auth = getAuth(app);
 }
 
-export { app, db, auth };
+export { app, db, auth, arrayUnion };
