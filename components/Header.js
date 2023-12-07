@@ -18,11 +18,11 @@ export function Header(props) {
                 </TouchableOpacity>
                 :null
             }
-            
+
             </View>
             <View style={styles.headerCenter}>
                 <Text style={styles.headerText}>
-                    {title}
+                {title} 
                 </Text>
             </View>
             <View style={styles.headerRight}/>
