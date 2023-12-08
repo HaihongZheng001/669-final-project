@@ -17,7 +17,7 @@ import StarRating from 'react-native-star-rating-widget';
 function CourseReviewsScreen(props) {
   const { navigation, route } = props;
   const { courseId } = route.params;
-  const [selectedTimes, setSelectedTimes] = React.useState([]);
+  const [selectedTimes, setSelectedTimes] = useState([]);
   const [rating, setRating] = useState(4);
 
   const data = [
