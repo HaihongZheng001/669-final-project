@@ -6,6 +6,9 @@ const LOAD_INSTRUCTORS = 'LOAD_INSTRUCTORS';
 const ADD_REVIEW = 'ADD_REVIEW';
 const LOAD_LOGIN_USER_REVIEWS = 'LOAD_LOGIN_USER_REVIEWS';
 const LOAD_COURSE_REVIEWS = 'LOAD_COURSE_REVIEWS';
+const UPDATE_REVIEW = 'UPDATE_REVIEW';
+const DELETE_REVIEW  = 'DELETE_REVIEW';
+
 
 
 const initialState = {
@@ -70,6 +73,14 @@ const updateUser = (state, userId, updatedUser) => {
   };
 }
 
+const updateReview = (state, reviewId, updatedReview) => {
+  let newReview = {...updatedReview};
+  return {
+    ...state, 
+    reviews: state.reviews.map(review=>review.id === reviewId ? newReview : review)
+  };
+}
+
 const addReview = (state, newReview) => {
   let review = {
     ...newReview,
@@ -79,6 +90,7 @@ const addReview = (state, newReview) => {
     reviews: [...state.reviews, review]
   };
 }
+
 
 
 
@@ -116,6 +128,28 @@ const addReview = (state, newReview) => {
 //   return { ...state, courses: updatedCourses };
 // }
 
+const deleteReview = (state, reviewObj) => {
+  // Remove the review from the reviews array
+  const updatedReviews = state.reviews.filter(review => review.id !== reviewObj.id);
+
+  // Update the users array by removing the reviewId from the user's myReviews
+  const updatedUsers = state.users.map(user => {
+    if (user.uid === reviewObj.userUid) { // Assuming userUid is the field in reviewObj that refers to the user's uid
+      return {
+        ...user,
+        myReviews: user.myReviews.filter(reviewId => reviewId !== reviewObj.id)
+      };
+    }
+    return user;
+  });
+
+  return {
+    ...state,
+    reviews: updatedReviews,
+    users: updatedUsers
+  };
+}
+
 const rootReducer = (state=initialState, action) => {
   switch (action.type) {
     case LOAD_USERS:
@@ -134,8 +168,12 @@ const rootReducer = (state=initialState, action) => {
       return loadLoginUserReviews(state, action.payload.loginUserReviews);
     case LOAD_COURSE_REVIEWS:
       return loadCourseReviews(state, action.payload.courseReviews)
+    case UPDATE_REVIEW:
+      return updateReview(state, action.payload.id, action.payload.review);
+    case DELETE_REVIEW:
+      return deleteReview(state, action.payload.review);
     default:
       return state;
   }
 }
-export { rootReducer, ADD_USER, LOAD_USERS, UPDATE_USER, LOAD_COURSES, LOAD_INSTRUCTORS, ADD_REVIEW, LOAD_LOGIN_USER_REVIEWS, LOAD_COURSE_REVIEWS };
+export { rootReducer, ADD_USER, LOAD_USERS, UPDATE_USER, LOAD_COURSES, LOAD_INSTRUCTORS, ADD_REVIEW, LOAD_LOGIN_USER_REVIEWS, LOAD_COURSE_REVIEWS, UPDATE_REVIEW, DELETE_REVIEW };

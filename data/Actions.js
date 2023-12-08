@@ -1,65 +1,9 @@
 import { initializeApp } from 'firebase/app';
-import { addDoc, updateDoc,setDoc, doc, getFirestore, collection, onSnapshot, getDocs, query, where, serverTimestamp, getDoc } from 'firebase/firestore';
+import { addDoc, updateDoc,setDoc, doc, getFirestore, collection, onSnapshot, getDocs, query, where, serverTimestamp, getDoc, deleteDoc } from 'firebase/firestore';
 // import { firebaseConfig } from '../Secrets';
-import { ADD_USER, LOAD_USERS, UPDATE_USER, ADD_REVIEW, LOAD_COURSES, LOAD_INSTRUCTORS, LOAD_LOGIN_USER_REVIEWS, LOAD_COURSE_REVIEWS } from './Reducer';
+import { ADD_USER, LOAD_USERS, UPDATE_USER, ADD_REVIEW, LOAD_COURSES, LOAD_INSTRUCTORS, LOAD_LOGIN_USER_REVIEWS, LOAD_COURSE_REVIEWS, UPDATE_REVIEW, DELETE_REVIEW } from './Reducer';
 import { app, db, auth } from '../firebase';
 import { Firestore, arrayUnion } from 'firebase/firestore';
-
-
-
-
-// const app = initializeApp(firebaseConfig);
-// const db = getFirestore(app);
-
-// let snapshotUnsubsribe = undefined;
-
-// const subscribeToUserUpdates = () => {
-//     if (snapshotUnsubsribe) {
-//       snapshotUnsubsribe();
-//     }
-//     return (dispatch) => {
-//       snapshotUnsubsribe = onSnapshot(collection(db, 'users'), usersSnapshot => {
-//         const updatedUsers = usersSnapshot.docs.map(uSnap => {
-//           console.log(uSnap.data());
-//           return uSnap.data(); // already has key?
-//         });
-//         dispatch({
-//           type: LOAD_USERS,
-//           payload: {
-//             users: updatedUsers
-//           }
-//         });
-//       });
-//     }
-//   }
-
-// const addUser = (user) => {
-//   return async (dispatch) => {
-//     // TODO: add to firestore
-//     // dispatch({
-//     //   type: ADD_USER,
-//     //   payload: {
-//     //     user: {...user}
-//     //   }
-//     // });
-
-//    userToAdd = {
-//     name: user.name,
-//     email: user.email,
-//     key: user.uid
-//   };
-//   await setDoc(doc(db, 'users', user.uid), userToAdd);
-
-//     // dispatch({
-//     //     type: ADD_USER,
-//     //     payload: {
-//     //     user: {...userToAdd}
-//     //     }
-//     // });
-//   }
-// }
-
-
 
 const addUser = (newUser) => {
   return async dispatch => {
@@ -276,17 +220,6 @@ const loadInstructors = () => {
 
 
 const updateUser = (updatedUser) => {
-  // return async dispatch => {
-  //   await updateDoc(doc(db, 'users', updatedUser.id), updatedUser);
-  //   dispatch( {
-  //       type: UPDATE_USER,
-  //       payload: {
-  //         id: updatedUser.id,
-  //         user: {...updatedUser}
-  //       }
-  //     }
-  //   );
-  // }
   return async dispatch => {
     try {
       if (!updatedUser.id) {
@@ -309,6 +242,58 @@ const updateUser = (updatedUser) => {
   };
 }
 
+const updateReview = (updatedReview) => {
+  return async dispatch => {
+    try {
+      if (!updatedReview.id) {
+        console.error("Review ID is undefined, cannot update review");
+        return;
+      }
+
+      await updateDoc(doc(db, 'reviews', updatedReview.id), updatedReview);
+      dispatch({
+        type: UPDATE_REVIEW,
+        payload: {
+          id: updatedReview.id,
+          user: { ...updatedReview }
+        }
+      });
+    } catch (error) {
+      console.error("Error updating review:", error);
+      // Handle the error appropriately
+    }
+  };
+}
 
 
-export { addUser, updateUser, loadUsers, addReview, loadCourses, loadInstructors, loadLoginUserReviews, loadCourseReviews }
+
+const deleteReview = (reviewObj) => {
+  return async (dispatch, getState) => {
+    let users = getState().users;
+    let userId = users.find(u => u.uid === reviewObj.userUid).id
+    if (users) {
+      users.forEach(u => {
+        if (u && u.myReviews) {
+          u.myReviews.forEach(async r => {
+            if (r === reviewObj.id) {
+              let newU = {...u, myReviews: u.myReviews.filter(r => r !== reviewObj.id)};
+              await updateDoc(doc(db, 'users', userId), newU);
+            }
+          });
+        }
+     
+    })}
+    await deleteDoc(doc(db, 'reviews', reviewObj.id));
+    console.log('deleted from firebase review:', reviewObj.id);
+    dispatch({
+      type: DELETE_REVIEW,
+      payload: {
+        review: reviewObj
+      }
+    })
+  }
+}
+
+
+
+export { addUser, updateUser, loadUsers, addReview, loadCourses, loadInstructors, loadLoginUserReviews, loadCourseReviews, updateReview, deleteReview }
