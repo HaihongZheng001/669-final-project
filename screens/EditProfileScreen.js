@@ -44,9 +44,9 @@ function EditProfileScreen( props ) {
       setCurUserName(currentUser.name)
       setCurUser(prevUser => {
         const user = users.find(user => user.email === loginUser.email && user.id);
-        setDepartment(user.department);
-        setCurrentMajor(user.currentMajor);
-        setUndergraduateMajor(user.undergraduateMajor);
+        setDepartment(user.department || '');
+        setCurrentMajor(user.currentMajor || '');
+        setUndergraduateMajor(user.undergraduateMajor || '');
         return user;
       })
     }
@@ -153,7 +153,6 @@ function EditProfileScreen( props ) {
         <View style={styles.buttonContainer}>
           <Button
             onPress={() =>{
-              // console.log(curUser)
               dispatch(updateUser({
                 ...curUser,
                 department: department,
