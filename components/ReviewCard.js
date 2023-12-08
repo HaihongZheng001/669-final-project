@@ -5,11 +5,17 @@ import { Button } from '@rneui/themed';
 import { MaterialIcons } from '@expo/vector-icons';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { FontAwesome5 } from '@expo/vector-icons';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { deleteReview, loadLoginUserReviews } from '../data/Actions';
+import { useDispatch } from 'react-redux';
+
+
 
 export function ReviewCard(props) {
     const { navigation, route, reviewObj, courseObjs, showAnimation } = props
     const courseObj = courseObjs && courseObjs.filter(courseObj => courseObj.id === reviewObj.courseId)[0]
+    const dispatch = useDispatch();
+ 
 
     return (
 
@@ -34,14 +40,23 @@ export function ReviewCard(props) {
             }
             <View style={styles.accountItemContainer}>
                 <View style={styles.iconContainer}>
-                    <TouchableOpacity>
+                    <TouchableOpacity
+                        onPress={() => {
+                            dispatch(deleteReview(reviewObj));
+                            // navigation.navigate('HomePage')
+                        }}
+                    
+                    >
                         <MaterialCommunityIcons name="delete" size={22} color="black" />
                     </TouchableOpacity>
 
                 </View>
 
                 <View style={styles.iconContainer}>
-                    <TouchableOpacity>
+                    <TouchableOpacity
+                        onPress={() => navigation.navigate('Home', { screen: 'EditReview', params: { reviewObj: reviewObj, preScreen: 'MyReviews' }
+                    })}
+                    >
                         <MaterialIcons name="edit" size={22} color="black" />
                     </TouchableOpacity>
                     
