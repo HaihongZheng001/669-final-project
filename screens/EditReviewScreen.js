@@ -5,12 +5,15 @@ import { generalStyles } from '../styles/Styles';
 import { Header } from '../components/Header';
 import { subscribeToAuthChanges } from '../AuthManager';
 import { useSelector, useDispatch } from 'react-redux';
-import { loadCourses, loadInstructors, addReview } from '../data/Actions';
+import { loadCourses, loadInstructors, addReview, updateReview } from '../data/Actions';
 import { getAuth } from 'firebase/auth';
 // import Autocomplete from 'react-native-autocomplete-input';
 
 function EditReviewScreen(props) {
   const { navigation, route } = props
+  let courseObj = null;
+  const { reviewObj, preScreen } = route.params || {};
+  
   // useEffect(()=> {
   //   subscribeToAuthChanges(navigation);
   // }, []);
@@ -19,7 +22,7 @@ function EditReviewScreen(props) {
   //   console.log('navigation',navigation)
   // }
   // ,[navigation])
-  const [courseName, setCourseName] = useState('');
+  const [courseName, setCourseName] = useState( '');
   const [year, setYear] = useState('');
   const [term, setTerm] = useState('');
   const [instructor, setInstructor] = useState('');
@@ -36,12 +39,8 @@ function EditReviewScreen(props) {
   const [courseId, setCourseId] = useState(null)
   const [instructorId, setInstructorId] = useState(null)
 
-  const courseObj = null;
-
   // const { courseObj } = route.params || null;
   // console.log('!!!courseObj in edit review', courseObj)
-
-
 
   const terms = [{id: '11', name: 'Fall'}, {id: '22', name: 'Winter'}, {id: '33', name: 'Summer'}, {id: '44', name: 'Spring'}, {id: '55', name: 'Spring/Summer'}]
 
@@ -71,6 +70,30 @@ function EditReviewScreen(props) {
       setLoginUser(user);
     });
   }, []);
+
+  useEffect(() => {
+    // setCourseName(courses && courses.length > 0 && reviewObj && courses.filter(course => course.id === reviewObj.courseId)[0].name);
+    let foundCourse = courses && reviewObj && courses.find(course => course.id === reviewObj.courseId);
+    setCourseName(foundCourse ? foundCourse.name : '');
+    if (reviewObj) {
+      // console.log('checking value bool', reviewObj.courseId)
+      setCourseId(reviewObj.courseId);
+      setYear(reviewObj.year);
+      setTerm(reviewObj.term);
+      setRating(reviewObj.rating);
+      setReviewContent(reviewObj.reviewContent)
+    }
+  }, [courses])
+
+  useEffect(() => {
+    // setInstructor(instructors && instructors.length > 0 && reviewObj && instructors.filter(instructor => instructor.id == reviewObj.instructorId)[0].name);
+    let foundInstructor = instructors && reviewObj && instructors.find(instructor => instructor.id === reviewObj.instructorId);
+    setInstructor(foundInstructor ? foundInstructor.name : '');
+
+    if (reviewObj) {
+      setInstructorId(reviewObj.instructorId)
+    }
+  }, [instructors])
 
   //below is actively used
   const updateSuggestions = (text, items, setName, setSuggestions, setIsDropdownOpen) => {
@@ -158,7 +181,7 @@ function EditReviewScreen(props) {
               autoCapitalize='none'
               spellCheck={false}
               onChangeText={updateCourseSuggestions}
-              value={courseObj ? courseObj.name : courseName}
+              value={courseName}
             />
           </View>
         </View>
@@ -353,9 +376,17 @@ function EditReviewScreen(props) {
               // console.log(term)
               // console.log(rating)
               // console.log(reviewContent)
-              if (courseObj) {
-                console.log('update course review')
-                navigation.goBack()
+              if (reviewObj && Object.keys(reviewObj).length !== 0) {
+                dispatch(updateReview({
+                  ...reviewObj,
+                  courseId: courseId,
+                  year: year,
+                  term: term,
+                  instructorId: instructorId,
+                  rating: rating,
+                  reviewContent: reviewContent,
+                }))
+                navigation.navigate('Account', { screen: 'MyReviews'})
 
 
               } else {
@@ -380,7 +411,12 @@ function EditReviewScreen(props) {
           <Button
             onPress={() =>{
               if(navigation) {
-                navigation.goBack();
+                if (preScreen){
+                  navigation.navigate('Account', {screen: 'MyReviews'});
+                } else {
+                  navigation.goBack();
+
+                }
               }
             }}
           >
