@@ -269,14 +269,14 @@ const styles = StyleSheet.create({
     // shadowRadius: 4
 
     // blur effect
-    shadowColor: '#87C4FF',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.3,
-    shadowRadius: 5,
-    elevation: 4, 
+    // shadowColor: '#87C4FF',
+    // shadowOffset: {
+    //   width: 0,
+    //   height: 2,
+    // },
+    // shadowOpacity: 0.3,
+    // shadowRadius: 5,
+    // elevation: 4, 
   },
 });
 
