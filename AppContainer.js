@@ -32,13 +32,13 @@ const store = configureStore({
 function MainAppStack() {
     const Tab = createBottomTabNavigator();
 
-    const iconStyle = (focused) => ({
-        shadowColor: focused ? '#000' : 'transparent', 
-        shadowOffset: { width: 0, height: 0 },
-        shadowOpacity: focused ? 0.3 : 0,
-        shadowRadius: focused ? 3 : 0,
-        elevation: focused ? 5 : 0, 
-    });
+    // const iconStyle = (focused) => ({
+    //     Color: focused ? '#000' : 'transparent', 
+    //     shadowOffshadowset: { width: 0, height: 0 },
+    //     shadowOpacity: focused ? 0.3 : 0,
+    //     shadowRadius: focused ? 3 : 0,
+    //     elevation: focused ? 5 : 0, 
+    // });
 
     return (
         <Tab.Navigator screenOptions={{ headerShown: false, tabBarShowLabel: false }}>
@@ -46,17 +46,26 @@ function MainAppStack() {
                 name="Home" 
                 component={HomeTabStack}
                 listeners={({ navigation }) => ({
+                    // focus: () => {
+                    //     // Resetting the AccountStack to its first screen when the tab is focused
+                    //     navigation.navigate('Home', { screen: 'HomePage' });
+                    // },
                     focus: () => {
-                        // Resetting the AccountStack to its first screen when the tab is focused
-                        navigation.navigate('Home', { screen: 'HomePage' });
+                        // Check the current state of the stack
+                        const state = navigation.getState();
+            
+                        // Only reset to HomePage if there's only one screen in the stack
+                        if (state.routes.length === 1) {
+                            navigation.navigate('Home', { screen: 'HomePage' });
+                        }
                     },
                 })}
                 options={{
                     tabBarIcon: ({focused, color, size}) => {
                         return (
-                        <View style={iconStyle(focused)}>
+                        <View>
                           <Entypo name="home" size={24} color={focused ? "#39A7FF" : "grey"} /> 
-                        </View>                     
+                        </View>
                         );
                       }
                   }}
@@ -65,15 +74,24 @@ function MainAppStack() {
                 name="Account" 
                 component={AccountTabStack} 
                 listeners={({ navigation }) => ({
+                    // focus: () => {
+                    //     // Resetting the AccountStack to its first screen when the tab is focused
+                    //     navigation.navigate('Account', { screen: 'AccountPage' });
+                    // },
                     focus: () => {
-                        // Resetting the AccountStack to its first screen when the tab is focused
-                        navigation.navigate('Account', { screen: 'AccountPage' });
+                        // Check the current state of the stack
+                        const state = navigation.getState();
+            
+                        // Only reset to HomePage if there's only one screen in the stack
+                        if (state.routes.length === 1) {
+                            navigation.navigate('Account', { screen: 'AccountPage' });
+                        }
                     },
                 })}
                 options={{
                     tabBarIcon: ({focused, color, size}) => {
                         return (
-                            <View style={iconStyle(focused)}>
+                            <View>
                                 <Ionicons name="person" size={23} color={focused ? "#39A7FF" : "grey"} />
                             </View>                     
 
