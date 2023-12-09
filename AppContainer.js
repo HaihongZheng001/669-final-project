@@ -46,19 +46,61 @@ function MainAppStack() {
                 name="Home" 
                 component={HomeTabStack}
                 listeners={({ navigation }) => ({
-                    focus: () => {
-                        // Resetting the AccountStack to its first screen when the tab is focused
-                        navigation.navigate('Home', { screen: 'HomePage' });
-                    },
+                    // focus: () => {
+                    //     // Resetting the AccountStack to its first screen when the tab is focused
+                    //     navigation.navigate('Home', { screen: 'HomePage' });
+                    // },
+
                     // focus: () => {
                     //     // Check the current state of the stack
                     //     const state = navigation.getState();
+                    //     console.log(state.routes)
             
                     //     // Only reset to HomePage if there's only one screen in the stack
                     //     if (state.routes.length === 1) {
                     //         navigation.navigate('Home', { screen: 'HomePage' });
+                    //     } 
+                    // }
+
+                    // tabPress: (e) => {
+                    //     // Prevent default behavior
+                    //     e.preventDefault();
+                  
+                    //     // Navigate based on the current state
+                    //     const currentRoute = getFocusedRouteNameFromRoute(route) ?? 'HomePage';
+                  
+                    //     if (currentRoute === 'HomePage') {
+                    //       navigation.navigate('Home', { screen: 'HomePage' });
+                    //     } else {
+                    //       // Let the Home stack handle the navigation
+                    //       navigation.navigate('Home');
                     //     }
-                    // },
+                    //   }
+                    tabPress: (e) => {
+                        // Prevent the default action
+                        e.preventDefault();
+            
+                        // Custom logic or navigation action
+                        // console.log('Home tab pressed');
+                        navigation.navigate('Home', { screen: 'HomePage'});
+                      },
+
+                    // focus: () => {
+                    //     const state = navigation.getState();
+                    //     // Check if the last route is 'EditReview' and came from 'MyReviews'
+                    //     const lastRoute = state.routes[state.index];
+                    //     // console.log('lastRoute', lastRoute)
+                    //     if (lastRoute.params?.params?.prevScreen === 'MyReviews') {
+                    //         // Maintain the current screen
+                    //         console.log('lastRoute param from different source', lastRoute.params)
+                    //         // navigation.setParams({ prevScreen: undefined });
+
+                    //         return;
+                    //     }
+                    //     // In other cases, reset to the HomePage
+
+                    //     navigation.navigate('Home', { screen: 'HomePage' });
+                    // }
                 })}
                 options={{
                     tabBarIcon: ({focused, color, size}) => {
@@ -78,15 +120,25 @@ function MainAppStack() {
                     //     // Resetting the AccountStack to its first screen when the tab is focused
                     //     navigation.navigate('Account', { screen: 'AccountPage' });
                     // },
-                    focus: () => {
-                        // Check the current state of the stack
-                        const state = navigation.getState();
+                    // focus: () => {
+                    //     // Check the current state of the stack
+                    //     const state = navigation.getState();
             
-                        // Only reset to HomePage if there's only one screen in the stack
-                        if (state.routes.length === 1) {
-                            navigation.navigate('Account', { screen: 'AccountPage' });
-                        }
-                    },
+                    //     // Only reset to HomePage if there's only one screen in the stack
+                    //     console.log('account routes', state.rountes)
+                    //     if (state.routes.length === 1) {
+                    //         navigation.navigate('Account', { screen: 'AccountPage' });
+                    //     }
+                    // },
+
+                    tabPress: (e) => {
+                        // Prevent the default action
+                        e.preventDefault();
+            
+                        // Custom logic or navigation action
+                        // console.log('Home tab pressed');
+                        navigation.navigate('Account', {screen: 'AccountPage}'});
+                      },
                 })}
                 options={{
                     tabBarIcon: ({focused, color, size}) => {
