@@ -46,25 +46,25 @@ function MainAppStack() {
                 name="Home" 
                 component={HomeTabStack}
                 listeners={({ navigation }) => ({
-                    // focus: () => {
-                    //     // Resetting the AccountStack to its first screen when the tab is focused
-                    //     navigation.navigate('Home', { screen: 'HomePage' });
-                    // },
                     focus: () => {
-                        // Check the current state of the stack
-                        const state = navigation.getState();
-            
-                        // Only reset to HomePage if there's only one screen in the stack
-                        if (state.routes.length === 1) {
-                            navigation.navigate('Home', { screen: 'HomePage' });
-                        }
+                        // Resetting the AccountStack to its first screen when the tab is focused
+                        navigation.navigate('Home', { screen: 'HomePage' });
                     },
+                    // focus: () => {
+                    //     // Check the current state of the stack
+                    //     const state = navigation.getState();
+            
+                    //     // Only reset to HomePage if there's only one screen in the stack
+                    //     if (state.routes.length === 1) {
+                    //         navigation.navigate('Home', { screen: 'HomePage' });
+                    //     }
+                    // },
                 })}
                 options={{
                     tabBarIcon: ({focused, color, size}) => {
                         return (
                         <View>
-                          <Entypo name="home" size={24} color={focused ? "#39A7FF" : "grey"} /> 
+                          <Entypo name="home" size={24} color={focused ? "#843685" : "grey"} /> 
                         </View>
                         );
                       }
@@ -92,13 +92,14 @@ function MainAppStack() {
                     tabBarIcon: ({focused, color, size}) => {
                         return (
                             <View>
-                                <Ionicons name="person" size={23} color={focused ? "#39A7FF" : "grey"} />
-                            </View>                     
+                                <Ionicons name="person" size={23} color={focused ? "#843685" : "grey"} />
+                            </View>
 
                         );
                       }
                 }}
             />
+    
         </Tab.Navigator>
     );
 }
