@@ -1,18 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TextInput, KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard, FlatList, keyExtractor, TouchableOpacity, ScrollView } from 'react-native';
-import { Button } from '@rneui/themed';
+// import { Button } from '@rneui/themed';
 import { generalStyles } from '../styles/Styles';
 import { Header } from '../components/Header';
 import { subscribeToAuthChanges } from '../AuthManager';
 import { useSelector, useDispatch } from 'react-redux';
 import { loadCourses, loadInstructors, addReview, updateReview } from '../data/Actions';
 import { getAuth } from 'firebase/auth';
+import { Button } from 'react-native-paper'
+import StarRating from 'react-native-star-rating-widget';
+
 // import Autocomplete from 'react-native-autocomplete-input';
 
 function EditReviewScreen(props) {
   const { navigation, route } = props
-  let courseObj = null;
-  const { reviewObj, preScreen } = route.params || {};
+  const { reviewObj, preScreen, courseObj } = route.params || {};
+  const { screen } = route.params || {}
   
   // useEffect(()=> {
   //   subscribeToAuthChanges(navigation);
@@ -26,7 +29,7 @@ function EditReviewScreen(props) {
   const [year, setYear] = useState('');
   const [term, setTerm] = useState('');
   const [instructor, setInstructor] = useState('');
-  const [rating, setRating] = useState('');
+  const [rating, setRating] = useState(0);
   const [reviewContent, setReviewContent] = useState('');
   const [loginUser, setLoginUser] = useState(null);
   const [courseSuggestions, setCourseSuggestions] = useState([]);
@@ -82,6 +85,9 @@ function EditReviewScreen(props) {
       setTerm(reviewObj.term);
       setRating(reviewObj.rating);
       setReviewContent(reviewObj.reviewContent)
+    } else if (courseObj) {
+      setCourseName(courseObj.name)
+      setCourseId(courseObj.id)
     }
   }, [courses])
 
@@ -173,11 +179,13 @@ function EditReviewScreen(props) {
       <View style={styles.body}>
         <View style={styles.listItemContainer}>
           <View style={styles.labelContainer}>
-            <Text style={styles.labelText}>Course No. & Name</Text>
+            <Text style={styles.labelText}>Course Name</Text>
           </View>
           <View style={styles.inputContainer}>
             <TextInput 
-              style={styles.inputBox}
+              editable={courseObj || reviewObj ? false : true}
+              style={{...styles.inputBox,
+                backgroundColor: courseObj || reviewObj ? '#F3EDFF' : styles.inputBox.backgroundColor}}
               autoCapitalize='none'
               spellCheck={false}
               onChangeText={updateCourseSuggestions}
@@ -193,7 +201,9 @@ function EditReviewScreen(props) {
                 <TouchableOpacity 
                   onPress={() => onCourseSuggestionPress(item.name, id=item.id, inputData='course')}
                 >
-                  <Text style={{ opacity:1, paddingBottom:'2%'}}>{item.name}</Text>
+                  <View style={{borderBottomWidth: 1, borderBottomColor:'white'}}>
+                    <Text style={{  padding:'2%', paddingTop:'4%', paddingBottom:'4%' }}>{item.name}</Text>
+                  </View>
                 </TouchableOpacity>
               )}
               keyExtractor={(item, index) => index.toString()}
@@ -205,13 +215,13 @@ function EditReviewScreen(props) {
                 right: 0,
                 zIndex: 20,
                 maxHeight: 300,
-                backgroundColor: 'white',
+                backgroundColor: '#F3EDFF',
                 display: isCourseDropdownOpen ? 'flex' : 'none', // Toggle visibility
                 padding:'2%',
                 marginLeft: '5.5%',
                 marginRight: '3.5%',
                 opacity: 1,
-                borderColor:'grey',
+                borderColor:'#5630B8',
                 borderTopColor:'white',
                 borderWidth:1,
                 borderRadius: '4%'
@@ -260,26 +270,29 @@ function EditReviewScreen(props) {
                 <TouchableOpacity 
                   onPress={() => onTermSuggestionPress(item.name)}
                 >
-                  <Text style={{ opacity:1, paddingBottom:'3%'}}>{item.name}</Text>
+                  <View style={{borderBottomWidth: 1, borderBottomColor:'white'}}>
+                    <Text style={{ padding:'2%', paddingTop:'4%', paddingBottom:'4%' }}>{item.name}</Text>
+                  </View>
                 </TouchableOpacity>
               )}
               keyExtractor={(item, index) => index.toString()}
               // style={styles.dropdownBox}
               style={{
                 position: 'absolute',
-                top: 142,
+                top: 151,
                 width:'30%',
                 left: 200,
                 right: 0,
                 zIndex: 20,
                 maxHeight: 300,
-                backgroundColor: 'white',
+                backgroundColor: '#F3EDFF',
                 display: isTermDropdownOpen ? 'flex' : 'none', // Toggle visibility
                 padding:'2%',
                 marginLeft:'6%',
                 marginRight: '3%',
                 opacity: 1,
-                borderColor:'grey',
+                borderColor:'#5630B8',
+                // borderColor:'#5630B8',
                 borderTopColor:'white',
                 borderWidth:1,
                 borderRadius: '4%'
@@ -307,46 +320,67 @@ function EditReviewScreen(props) {
                 <TouchableOpacity 
                   onPress={() => onInstructorSuggestionPress(item.name, id=item.id, inputData='instructor')}
                 >
+                <View style={{borderBottomWidth: 1, borderBottomColor:'white'}}>
                   <Text style={{ opacity:1, paddingBottom:'2%'}}>{item.name}</Text>
+                </View>
                 </TouchableOpacity>
               )}
               keyExtractor={(item, index) => index.toString()}
               // style={styles.dropdownBox}
               style={{
                 position: 'absolute',
-                top: 216,
+                top: 219,
                 left: 0,
                 right: 0,
                 zIndex: 20,
                 maxHeight: 300,
-                backgroundColor: 'white',
+                backgroundColor: '#F3EDFF',
                 display: isInstructorDropdownOpen ? 'flex' : 'none', // Toggle visibility
                 padding:'2%',
                 marginLeft: '5.5%',
                 marginRight: '3.5%',
                 opacity: 1,
-                borderColor:'grey',
+                borderColor:'#5630B8',
                 borderTopColor:'white',
                 borderWidth:1,
                 borderRadius: '4%'
               }}
             />
 
-        <View style={styles.listItemContainer}>
-          <View style={styles.labelContainer}>
-            <Text style={styles.labelText}>Rating</Text>
+        <View style={[styles.listItemContainer, {flexDirection:'row', alignItems:'center', marginBottom:'5%' }]}>
+          <View style={[ styles.labelContainer, { alignItems:'center' }]}>
+            <Text style={ styles.labelText }>Rating:   </Text>
           </View>
-          <View style={styles.inputContainer}>
-            <TextInput 
+          <StarRating
+              rating={rating}
+              onChange={setRating}
+              starSize={24}
+              color='#FFCF00'
+              starStyle	={{ marginLeft: 0 }}
+          />
+          <Text style={ styles.labelText }>  { parseFloat(rating) > 0 ? rating : null } {parseFloat(rating) > 0 ? '/ 5' : null}</Text>
+
+
+          {/* <View style={[styles.inputContainer, {flexDirection:'row', alignItems:'center'}]}> */}
+          {/* <StarRating
+              rating={rating}
+              onChange={setRating}
+              starSize={26}
+              color='#FFCF00'
+              starStyle	={{ marginLeft: 0 }}
+          />
+          <Text style={{ color: '#4C338F', fontSize:16 }}>{rating}</Text> */}
+            {/* <TextInput 
               style={styles.inputBox}
               autoCapitalize='none'
               spellCheck={false}
               onChangeText={text=>setRating(text)}
               value={rating}
               keyboardType='numeric'
-            />
-          </View>
+            /> */}
+          {/* </View> */}
         </View>
+
         <View style={styles.longListItemContainer}>
           <View style={styles.labelContainer}>
             <Text style={styles.labelText}>Review</Text>
@@ -366,8 +400,28 @@ function EditReviewScreen(props) {
         </View>
 
 
-        <View style={styles.buttonContainer}>
+        <View style={styles.pairButtonContainer}>
           <Button
+              mode={'contained'}
+              style={{ borderRadius: '6%', justifyContent: 'center', backgroundColor:'#A66319' }}
+              labelStyle={{ fontSize: 14 }}
+              onPress={() =>{
+                if(navigation) {
+                  if ((reviewObj && Object.keys(reviewObj).length !== 0) || (screen && screen=='MyReviews' )){
+                    navigation.navigate('Account', { screen: 'MyReviews' });
+                  } else {
+                    navigation.goBack();
+
+                  }
+                }
+              }}
+            >
+              Cancel
+          </Button>   
+          <Button
+            mode={'contained'}
+            style={{ borderRadius: '6%', justifyContent: 'center', backgroundColor:'#5F32D1' }}
+            labelStyle={{ fontSize: 14 }}
             onPress={() =>{
               // console.log('courseId!!', courseId)
               // console.log('login user', loginUser.uid)
@@ -376,7 +430,10 @@ function EditReviewScreen(props) {
               // console.log(term)
               // console.log(rating)
               // console.log(reviewContent)
+
+              //todo: checking if user has valid input, 
               if (reviewObj && Object.keys(reviewObj).length !== 0) {
+                console.log('uodating!!')
                 dispatch(updateReview({
                   ...reviewObj,
                   courseId: courseId,
@@ -399,30 +456,18 @@ function EditReviewScreen(props) {
                   rating: rating,
                   reviewContent: reviewContent,
                 }));
+                // const time = Date.now()
+                // console.log('add review', time)
                 navigation.navigate('HomePage')
               }
             }}
           >
             Submit
-          </Button>  
+          </Button> 
+          
         </View> 
 
-        <View style={styles.buttonContainer}>
-          <Button
-            onPress={() =>{
-              if(navigation) {
-                if (preScreen){
-                  navigation.navigate('Account', {screen: 'MyReviews'});
-                } else {
-                  navigation.goBack();
-
-                }
-              }
-            }}
-          >
-            Cancel
-          </Button>  
-        </View> 
+       
 
       </View>
     {/* </View> */}
@@ -440,6 +485,7 @@ const styles = StyleSheet.create({
   justifyContent: 'center',
   alignItems: 'center',
 },
+
 });
 
 export default EditReviewScreen;
