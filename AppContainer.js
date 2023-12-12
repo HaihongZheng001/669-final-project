@@ -12,6 +12,7 @@ import AccountScreen from './screens/AccountScreen';
 import EditProfileScreen from './screens/EditProfileScreen';
 import MyReviewsScreen from './screens/MyReviewsScreen';
 import LoginScreen from './screens/LoginScreen';
+import ExpandReviewScreen from "./screens/ExpandReviewScreen";
 
 import { rootReducer } from './data/Reducer';
 import { configureStore } from '@reduxjs/toolkit';
@@ -22,6 +23,7 @@ import { Entypo } from '@expo/vector-icons';
 import { FAB } from 'react-native-paper';
 import { Ionicons } from '@expo/vector-icons';
 import { View } from "react-native";
+import ReviewFilterScreen from "./screens/ReviewFilterScreen";
 
 
 const store = configureStore({
@@ -106,7 +108,7 @@ function MainAppStack() {
                     tabBarIcon: ({focused, color, size}) => {
                         return (
                         <View>
-                          <Entypo name="home" size={24} color={focused ? "#843685" : "grey"} /> 
+                          <Entypo name="home" size={24} color={focused ? "#5F32D1" : "#A0A0A0"} /> 
                         </View>
                         );
                       }
@@ -137,14 +139,14 @@ function MainAppStack() {
             
                         // Custom logic or navigation action
                         // console.log('Home tab pressed');
-                        navigation.navigate('Account', {screen: 'AccountPage}'});
+                        navigation.navigate('Account', { screen: 'AccountPage' });
                       },
                 })}
                 options={{
                     tabBarIcon: ({focused, color, size}) => {
                         return (
                             <View>
-                                <Ionicons name="person" size={23} color={focused ? "#843685" : "grey"} />
+                                <Ionicons name="person" size={23} color={focused ? "#5F32D1" : "#A0A0A0"} />
                             </View>
 
                         );
@@ -164,6 +166,9 @@ function HomeTabStack() {
             <HomeStack.Screen name='HomePage' component={HomeScreen}/>
             <HomeStack.Screen name='CourseReviews' component={CourseReviewsScreen}/>
             <HomeStack.Screen name='EditReview' component={EditReviewScreen}/>
+            <HomeStack.Screen name='ReviewFilter' component={ReviewFilterScreen}/>
+            <HomeStack.Screen name='ExpandReview' component={ExpandReviewScreen}/>
+
         </HomeStack.Navigator>
     )
 }
