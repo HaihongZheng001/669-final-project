@@ -80,7 +80,7 @@ function MyReviewsScreen(props) {
                   <View style={{ alignItems:'center' }}>
                     <Image source={smile} style={{ width: 300, height:300, marginBottom:'2%' }}/>
 
-                    <Button mode='contained' style={{  backgroundColor:'#5F32D1' }} onPress={() => navigation.navigate('EditReview', { screen: 'MyReviews' })}>Write a Review</Button>
+                    <Button mode='contained' style={{  backgroundColor:'#5F32D1' }} onPress={() => navigation.navigate('EditReview', { screen: 'MyReviews', reviewObj: null })}>Write a Review</Button>
                   </View>
                 </View>)
                 
