@@ -30,10 +30,9 @@ function CourseReviewsScreen(props) {
   const [instructorFilterOptions, setInstructorFilterOptions] = useState([]);
   const [ sortingChoice, setSortingChoice ] = useState('New to Old')
 
-
   const initUsers = useSelector(state => state.users)
   const reviews = useSelector(state => state.reviews)
-  const initInstructors = useSelector(state =>  state.instructors)
+  const initInstructors = useSelector(state => state.instructors)
 
   const getUserFilteredReviews = () => {
     if (initCourseReviews && checkedRatings && checkedTimes && checkedTimes.length > 0 && checkedInstructors && checkedInstructors.length > 0 ) {
@@ -52,14 +51,16 @@ function CourseReviewsScreen(props) {
 
       const checkedReviews = initCourseReviews.filter(review => checkedTerm.includes(review.term) && checkedYear.includes(review.year) && checkedInstructorIds.includes(review.instructorId) && checkedRatingsNew.includes(review.rating))
       // console.log('checked reviews', checkedReviews.length)
-      setUserFilteredReviews(checkedReviews)
+      return checkedReviews
+      
     }
   }
 
-  const getTimeFilterOptions = () => {
-    if (initCourseReviews) {
+  const getTimeFilterOptions = (inputReviews) => {
+    
+      // console.log('getting time options!!!')
       let timeStrList = [];
-      initCourseReviews.map(reviewObj => {
+      inputReviews.map(reviewObj => {
         const timeStr = reviewObj.term + ' ' + reviewObj.year
         if (!timeStrList.includes(timeStr)) {
           timeStrList.push(timeStr)
@@ -70,16 +71,16 @@ function CourseReviewsScreen(props) {
         const term = str.split(' ')[0]
         return ({ isChecked: true, time: str,  year: year, term: term, id:index }) 
       })
-      // console.log('times!!!', result)
+      // console.log('time options!!!!!!', result)
       return result
       // setTimeFilterOptions(result)
-    }
+
   }
 
-  const getRatingFilterOptions = () => {
-    if (initCourseReviews) {
+  const getRatingFilterOptions = (inputReviews) => {
+    // console.log('getting rating options!!!')
       let ratingList = []
-      initCourseReviews.map(reviewObj => {
+      inputReviews.map(reviewObj => {
         if (!ratingList.includes(reviewObj.rating)) {
           ratingList.push(reviewObj.rating)
           // console.log('!!list', ratingList)
@@ -87,30 +88,26 @@ function CourseReviewsScreen(props) {
       })
       // console.log('rating list', ratingList)
       const result = ratingList.map((r, index) => ({ rating: r, id:index, isChecked: true }))
-      // console.log('result rating!!!!!~~~~##', result)
+      // console.log('rating options!!!!', result)
       return result
       // setRatingFilterOptions(result)
-    }
-
   }
 
-  const getInstructorFilterOptions = () => {
-    if (initCourseReviews && initCourseReviews.length > 0 && initInstructors && initInstructors.length > 0)  {
-      console.log('!!!!###ini!review', initCourseReviews)
+  const getInstructorFilterOptions = (inputReviews, inputInstructors) => {
+    // console.log('getting instuctors options!!! cur init course reviews value', initCourseReviews)
       let idList = [];
-      initCourseReviews.map(reviewObj => {
+      inputReviews.map(reviewObj => {
         if (!idList.includes(reviewObj.instructorId)) {
           idList.push(reviewObj.instructorId)
         }
       })
-      console.log('idList!!!!', idList)
-      const result = initInstructors.filter(ins => idList.includes(ins.id)).map(obj=> ({ id: obj.id, name: obj.name, isChecked: true }))
+      // console.log('idList!!!!', idList)
+      const result = inputInstructors.filter(ins => idList.includes(ins.id)).map(obj=> ({ id: obj.id, name: obj.name, isChecked: true }))
+      // console.log('instructor options', result)
       return result
       // setInstructorFilterOptions(result)
-    }
   }
   
-
 
   const dispatch = useDispatch();
 
@@ -125,31 +122,34 @@ function CourseReviewsScreen(props) {
 
 
   useEffect(() => {
+    // console.log('reviews', reviews)
     const filteredReviews = reviews.filter(review => review.courseId === courseId)
-    console.log('checing reviews', reviews)
-    console.log('checing filtered reviews', filteredReviews)
-    getCourseRating(initCourseReviews)
-
-
-    if (filteredReviews && filteredReviews.length > 0) {
-      console.log('setting filterz!!!!')
-      setInitCourseReviews(filteredReviews)
-      // getCourseRating(filteredReviews)
+    // console.log('filteredReviews', filteredReviews)
+    if (filteredReviews && filteredReviews.length > 0 && initInstructors && initInstructors.length > 0) {
+      // console.log('enter filtered reviews length > 0')
+      // console.log('current init instructors', initInstructors)
+      setInitCourseReviews(prev => {
+        const sorted = sortReviews(filteredReviews, sortingChoice)
+        return sorted
+      })
+      getCourseRating(filteredReviews)
+      const iResult = getInstructorFilterOptions(filteredReviews, initInstructors)
+      const tResult = getTimeFilterOptions(filteredReviews)
+      const rResult = getRatingFilterOptions(filteredReviews)
+      setRatingFilterOptions(rResult)
+      setTimeFilterOptions(tResult)
+      setInstructorFilterOptions(iResult)
     }
- 
-    console.log('rendering!!!!!')
-  }, [reviews])
-
-  useEffect(() => {
-    console.log('!@@@@haha')
-    const iResult = getInstructorFilterOptions(initInstructors)
-    console.log('iresult', iResult)
-    const tResult = getTimeFilterOptions(reviews)
-    const rResult = getRatingFilterOptions(reviews)
-    setRatingFilterOptions(rResult)
-    setTimeFilterOptions(tResult)
-    setInstructorFilterOptions(iResult)
   }, [reviews, initInstructors])
+
+  // useEffect(() => {
+  //   const iResult = getInstructorFilterOptions(initInstructors)
+  //   const tResult = getTimeFilterOptions(reviews)
+  //   const rResult = getRatingFilterOptions(reviews)
+  //   setRatingFilterOptions(rResult)
+  //   setTimeFilterOptions(tResult)
+  //   setInstructorFilterOptions(iResult)
+  // }, [reviews, initInstructors])
 
 
 
@@ -175,9 +175,9 @@ function CourseReviewsScreen(props) {
 
 
 
-  const sortReviews = (reviewsToSort) => {
+  const sortReviews = (reviewsToSort, curLogic) => {
     let result = [...reviewsToSort];
-    let curLogic = sortingLogic || sortingChoice
+  
     const termOrder = { 'Winter': 1, 'Spring': 2, 'Summer': 3, 'Fall': 4 };
 
     const sortByYearAndTerm = (a, b, isDescending = false) => {
@@ -201,7 +201,6 @@ function CourseReviewsScreen(props) {
     } else if (curLogic === 'Low to High') {
       result.sort((a, b) => a.rating - b.rating);
     }
-
     return result;
   }
 
@@ -209,19 +208,23 @@ function CourseReviewsScreen(props) {
   useEffect(() => {
     if (sortingLogic) {
       setSortingChoice(sortingLogic)
-    }
+    } 
     if (isFiltered && checkedInstructors && checkedRatings && checkedTimes) {
-      console.log('seting!!!!!!!')
       setInstructorFilterOptions(checkedInstructors);
       setTimeFilterOptions(checkedTimes)
       setRatingFilterOptions(checkedRatings)
-      getUserFilteredReviews(checkedInstructors, checkedRatings, checkedTimes)
+      const resultReviews = getUserFilteredReviews(checkedInstructors, checkedRatings, checkedTimes)
+      setUserFilteredReviews(prev => {
+        let sorted;
+        if (sortingLogic) {
+          sorted = sortReviews(resultReviews, sortingLogic)
+        } else {
+          sorted = sortReviews(resultReviews, sortingChoice)
+        }
+        return sorted
+      })
     }
-    if (!isFiltered) {
-      setInitCourseReviews(prev => sortReviews(prev))
-    } else {
-      setUserFilteredReviews(prev => sortReviews(prev))
-    }
+
   }, [isFiltered, sortingLogic])
   
 
@@ -268,18 +271,16 @@ function CourseReviewsScreen(props) {
             <View style={{ flex: 0.4, flexDirection:'flex-end' }}>
             <TouchableOpacity
                 onPress={() => {
-
-                  console.log('sending time !!', timeFilterOptions)
-                  console.log('sending instur!!', instructorFilterOptions)
-                  console.log('sending rating!!', ratingFilterOptions)
+                  // sending!
+                  // console.log(' timeFilterOptions !!', timeFilterOptions)
+                  // console.log('instructorFilterOptions!!', instructorFilterOptions)
+                  // console.log('ratingFilterOptions!!', ratingFilterOptions)
 
                   if (instructorFilterOptions && instructorFilterOptions.length > 0 && timeFilterOptions && timeFilterOptions.length > 0 && ratingFilterOptions && ratingFilterOptions.length > 0) {
                     navigation.navigate('ReviewFilter', { instructorFilterOptions: instructorFilterOptions, timeFilterOptions: timeFilterOptions, ratingFilterOptions:ratingFilterOptions, courseId: courseId, sortingChoice: sortingChoice })
                   }
                 }}
               >
-                {console.log('@@logic', sortingLogic)}
-                {console.log('@@choice', sortingChoice)}
             <View style={{ flexDirection:'row', justifyContent:'space-evenly', alignItems:'center', borderRadius: '50%', backgroundColor: isFiltered && (initCourseReviews && userFilteredReviews && initCourseReviews.length !== userFilteredReviews.length)?   '#FFE3C4': 'transparent' }}>
                <Text style={{ color: '#4C338F' , fontWeight: !sortingLogic || sortingLogic === 'New to Old' ? 'normal' : 'bold' }}>{sortingLogic ? sortingLogic : sortingChoice}</Text>
 
@@ -350,9 +351,24 @@ function CourseReviewsScreen(props) {
                       </View>
                       {/* {console.log('!!initInstructors', initInstructors)} */}
 
-                  <View style={styles.reviewContentContainer}>
-                    <Text>{item.reviewContent}</Text>
-                  </View>
+                      <View style={styles.reviewContentContainer}>
+                          {
+                            item.reviewContent.split(' ').length > 50 ?
+                              <Text style={{ lineHeight:20 }}>{item.reviewContent.split(' ').slice(0, 50).join(' ')} ...
+                                <TouchableOpacity 
+                                  onPress={() => navigation.navigate('ExpandReview', {reviewObj: item, userObj: initUsers && initUsers.length > 0 && initUsers.filter(user => user.uid === item.userUid)[0], courseObj: courseObj })}
+                                >
+                                  <Text style={{ color:'purple' }}>[Read More]</Text>
+                                </TouchableOpacity>
+                              </Text>
+                              :
+                              <Text style={{ lineHeight:20 }}>{item.reviewContent}</Text>
+                            
+                            
+                          }
+                          
+
+                      </View>
 
                 </View>
               )}    
@@ -406,7 +422,8 @@ const styles = StyleSheet.create({
   boldLabel: {
     fontWeight: 'bold',
     color: '#4C338F',
-    fontSize: 16
+    fontSize: 16,
+    lineHeight: 20
   },
   selectContainer: {
     marginTop: '10%',
