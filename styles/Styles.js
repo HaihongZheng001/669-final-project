@@ -1,16 +1,17 @@
 export const generalStyles = {
     container: {
         flex: 1,
-        backgroundColor: '#fff',
+        // backgroundColor: '#fff',
         alignItems: 'center',
         justifyContent: 'center',
+        backgroundColor: '#FFFAFE',
         // backgroundColor: '#F9F5EB'
 
     },
     header: {
         flex: 0.1,
         flexDirection: 'row',
-        backgroundColor: 'white',
+        backgroundColor: '#E7DBFF',
         alignItems: 'flex-end',
         justifyContent: 'space-between',
         width: '100%',
@@ -38,7 +39,7 @@ export const generalStyles = {
     headerText: {
         fontSize: 20,
         fontWeight: 'bold',
-        color: 'black'
+        color: '#6750A5'
     },
     headerIcon: {
         fontSize: 24,
@@ -81,20 +82,22 @@ export const generalStyles = {
         // backgroundColor:'lightblue',
     },
     longInputContainer: {
-        marginBottom: '6%',
+        marginBottom: '3%',
         // backgroundColor: 'orange',
     },
     longInputBox: {
-        borderColor: 'grey',
+        borderColor: '#5630B8',
+        backgroundColor: 'white',
         borderWidth: 1,
         borderRadius: 4,
         fontSize: 14,
         padding: '2%',
         // backgroundColor: 'pink',
-        height: 120,
+        height: 160,
     },
     inputBox: {
-        borderColor: 'grey',
+        borderColor: '#5630B8',
+        backgroundColor: 'white',
         borderWidth: 1,
         borderRadius: 4,
         fontSize: 14,
@@ -115,6 +118,9 @@ export const generalStyles = {
     sideItemContainer: {
         flexDirection: 'column',
         flex: 0.4,
+        // backgroundColor: 'pink'
+        marginBottom: '2%',
+
     },
     sideLabelContainer: {
         // backgroundColor: 'lightblue',
@@ -126,23 +132,27 @@ export const generalStyles = {
         // backgroundColor: 'pink',
     },
     sideInputBox: {
-        borderColor: 'grey',
+        borderColor: '#5630B8',
+        backgroundColor: 'white',
         borderWidth: 1,
         borderRadius: 4,
         fontSize: 14,
         padding: '2%',
-        height: 28
+        height: 28,
+        height:35
     },
 
     buttonContainer: {
         marginTop: '5%',
+        alignItems: 'center',
+        marginTop:'10%'
         
     },
     
     sectionTitleLabel: {
         fontSize: 18,
         fontWeight: 'bold',
-        color: 'black'
+        color: '#4C338F',
     },
     // dropdownBox: {
     //     backgroundColor: '#FFFFFF',
@@ -150,6 +160,13 @@ export const generalStyles = {
     //     borderRadius: '5%',
     //     flex: 0.5
     // }
+    pairButtonContainer:{
+        marginTop: '5%',
+        alignItems: 'center',
+        marginTop:'6%',
+        flexDirection: 'row',
+        justifyContent:'space-evenly'
+    }
 
 
 }
