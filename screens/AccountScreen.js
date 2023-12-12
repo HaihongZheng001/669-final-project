@@ -1,8 +1,7 @@
-import { Button } from '@rneui/themed';
+// import { Button } from '@rneui/themed';
 import { View, Text, StyleSheet, Alert, FlatList, TouchableOpacity } from 'react-native';
 import { signOut, getAuthUser } from '../AuthManager';
 import { loadUsers, updateUser } from '../data/Actions';
-
 
 import { useDispatch, useSelector } from 'react-redux';
 import React, { useState, useEffect } from 'react';
@@ -15,6 +14,10 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { Ionicons } from '@expo/vector-icons';
 import { getAuth } from 'firebase/auth';
+import { Button } from 'react-native-paper';
+import { Skeleton } from '@rneui/themed';
+
+
 
 
 function AccountScreen(props) {
@@ -50,9 +53,11 @@ function AccountScreen(props) {
   }, [users, loginUser])
 
   return (
-    <View style={styles.container}>
-      <Header title={curUser && curUser.name} showBackButton={false}/>
-      <View style={styles.body}>
+   <View style={styles.container}>
+     <Header title={`Hi! ${curUser?.name}`} showBackButton={false}/>
+     {curUser ? 
+     (<> 
+     <View style={styles.body}>
 
        <View style={styles.personalInfoContainer}>
         <View style={styles.sectionTitleContainer}>
@@ -63,7 +68,7 @@ function AccountScreen(props) {
             <TouchableOpacity style={styles.topLeftOpacityContainer} onPress={() => {
                 navigation.navigate('EditProfile')
             }}>
-              <MaterialIcons name="edit" size={24} color="black" />
+              <MaterialIcons name="edit" size={30} color="#4C338F" />
             </TouchableOpacity>
           </View>
 
@@ -71,7 +76,7 @@ function AccountScreen(props) {
 
         <View style={styles.accountItemContainer}>
           <View style={styles.iconContainer}>
-            <MaterialIcons name="email" size={26} color="#39A7FF" />
+            <MaterialIcons name="email" size={28} color="#9E9BDE" />
           </View>
           <View style={styles.infoContainer}>
             <Text style={styles.itemTitleText}>Email</Text>
@@ -82,7 +87,7 @@ function AccountScreen(props) {
 
         <View style={styles.accountItemContainer}>
           <View style={styles.iconContainer}>
-            <MaterialCommunityIcons name="office-building" size={32} color="#39A7FF" />
+            <MaterialCommunityIcons name="office-building" size={28} color="#9E9BDE" />
           </View>
           <View style={styles.infoContainer}>
             <Text style={styles.itemTitleText}>Department</Text>
@@ -93,7 +98,7 @@ function AccountScreen(props) {
 
         <View style={styles.accountItemContainer}>
           <View style={styles.iconContainer}>
-            <FontAwesome5 name="book-reader" size={24} color="#39A7FF" />
+            <FontAwesome5 name="book-reader" size={24} color="#9E9BDE" />
           </View>
           <View style={styles.infoContainer}>
             <Text style={styles.itemTitleText}>Current Major</Text>
@@ -103,7 +108,7 @@ function AccountScreen(props) {
 
         <View style={styles.accountItemContainer}>
           <View style={styles.iconContainer}>
-            <Ionicons name="school" size={26} color="#39A7FF" />
+            <Ionicons name="school" size={26} color="#9E9BDE" />
           </View>
           <View style={styles.infoContainer}>
             <Text style={styles.itemTitleText}>Undergraduate Major</Text>
@@ -125,15 +130,15 @@ function AccountScreen(props) {
         >
           <View style={styles.accountItemContainer}>
             <View style={styles.iconContainer}>
-              <MaterialIcons name="rate-review" size={24} color="#39A7FF" />
+              <MaterialIcons name="rate-review" size={26} color="#9E9BDE" />
             </View>
               <View style={styles.infoContainer}>
                 <Text style={styles.itemTitleText}>Total Reviews</Text>
-                <Text style={styles.itemDetailText}>Click to view details</Text>
+                <Text style={[styles.itemDetailText, { color:'grey' }]}>Click to view details</Text>
 
               </View>
-              <View style={[styles.iconContainer, {backgroundColor: 'white'}]}>
-                <Ionicons name="md-chevron-forward" size={24} color="black" />
+              <View style={[styles.iconContainer, {backgroundColor: '#FFFAFE'}]}>
+                <Ionicons name="md-chevron-forward" size={24} color="#4C338F" />
               </View>
           </View>
         </TouchableOpacity>
@@ -142,7 +147,10 @@ function AccountScreen(props) {
       </View>
       
         <Button
-          style={styles.buttonContainer}
+          // style={styles.buttonContainer}
+          style={{ borderRadius: '6%', width:'50%', alignSelf: 'center', marginTop: '5%', backgroundColor:'#5F32D1' }}
+          mode={'contained'}
+          labelStyle={{ fontSize: 14 }}
           onPress={async () => {
               try {
                   await signOut();
@@ -156,6 +164,13 @@ function AccountScreen(props) {
         </Button>
 
       </View>
+      </>) : 
+       <View style={styles.body} >
+        <Skeleton width={'60%'} height={60} backgroundColor='#EAE1FC' borderRadius={6} marginBottom={25} skeletonStyle={{ backgroundColor:'#F8F5FF' }} />
+        <Skeleton width={'100%'} height={320} backgroundColor='#EAE1FC' borderRadius={6} marginBottom={45} skeletonStyle={{ backgroundColor:'#F8F5FF' }} />
+        <Skeleton width={'60%'} height={60} backgroundColor='#EAE1FC' borderRadius={6} marginBottom={15} skeletonStyle={{ backgroundColor:'#F8F5FF' }} />
+        <Skeleton width={'100%'} height={80} backgroundColor='#EAE1FC' borderRadius={6} marginBottom={15} skeletonStyle={{ backgroundColor:'#F8F5FF' }} />
+      </View> }
       
     </View>
   );
@@ -184,19 +199,20 @@ const styles = StyleSheet.create({
   },
   accountItemContainer: {
     flexDirection: 'row',
-    borderBottomColor: 'lightgrey',
-    borderBottomWidth: 1,
+    borderBottomColor: 'white',
+    borderBottomWidth: 2,
     paddingBottom: '3%',
     marginBottom:'3%',
     marginTop:'3%',
   },
   iconContainer: {
-    width: 50,  // Diameter of the circle
-    height: 50, // Same as width
-    borderRadius: 25, // Half of width/height
-    backgroundColor: '#EEF5FF', // Circle color
+    // width: 50,  // Diameter of the circle
+    // height: 50, // Same as width
+    // borderRadius: 25, // Half of width/height
+    // backgroundColor: '#D7A9B7', // Circle color
     justifyContent: 'center', // Center the icon horizontally
     alignItems: 'center', 
+    marginRight: '2%'
   },
   infoContainer: {
     // backgroundColor: 'yellow',
@@ -208,10 +224,12 @@ const styles = StyleSheet.create({
   itemTitleText: {
     fontSize: 14,
     fontWeight: 'bold',
-    marginBottom: '1%'
+    marginBottom: '2%',
+    color: '#4C338F'
   },
   itemDetailText: {
-    fontSize: 14
+    fontSize: 14,
+    color: '#323232'
   }
 
 
