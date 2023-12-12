@@ -1,62 +1,75 @@
 
 import { useState, useEffect } from 'react';
-import { View, Text, TextInput, StyleSheet, Alert, Keyboard, TouchableWithoutFeedback,Image, KeyboardAvoidingView } from 'react-native';
-import { Button } from '@rneui/themed';
+import { View, Text, StyleSheet, Alert, Keyboard, TouchableWithoutFeedback,Image, KeyboardAvoidingView } from 'react-native';
+// import { Button } from '@rneui/themed';
 import { useDispatch } from 'react-redux';
 import { signIn, signUp, subscribeToAuthChanges } from '../AuthManager';
 import { addUser } from '../data/Actions';
-import logo from '../assets/logo33.png';
+import logo from '../assets/logo2.png';
+import { TextInput, Button } from 'react-native-paper';
 
 
 
 function SigninBox({navigation}) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+
   
     return (
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
 
       <View style={styles.loginContainer}>
         <View style={styles.loginRow}>
-        <Image source={logo} style={{ width: 300, height: 200 }}/>
+          <Image source={logo} style={styles.logoImage}/>
         </View>
-        <Text style={styles.loginHeaderText}>Sign In</Text>
         <View style={styles.loginRow}>
-          <View style={styles.loginLabelContainer}>
-            <Text style={styles.loginLabelText}>Email: </Text>
-          </View>
+
           <View style={styles.loginInputContainer}>
             <TextInput 
               style={styles.loginInputBox}
-              placeholder='enter email address' 
               autoCapitalize='none'
-              spellCheck={false}
+              mode='outlined'
+              label="Email"
               onChangeText={text=>setEmail(text)}
               value={email}
+              outlineColor = '#E092DF'
+              outlineStyle={{ borderRadius:'10%' }}
+              activeOutlineColor='#D952D8'
             />
           </View>
         </View>
         <View style={styles.loginRow}>
-          <View style={styles.loginLabelContainer}>
+          {/* <View style={styles.loginLabelContainer}>
             <Text style={styles.loginLabelText}>Password: </Text>
-          </View>
+          </View> */}
           <View style={styles.loginInputContainer}>
             <TextInput 
               style={styles.loginInputBox}
-              placeholder='enter password' 
-              autoCapitalize='none'
-              spellCheck={false}
+              // placeholder='enter password' 
+              // autoCapitalize='none'
+              // spellCheck={false}
+              mode='outlined'
               secureTextEntry={true}
+              label="Password"
               onChangeText={text=>setPassword(text)}
               value={password}
+              outlineColor = '#E092DF'
+              activeOutlineColor='#D952D8'
+              outlineStyle={{ borderRadius:'10%' }}
+
             />
           </View>
         </View>
-        <View style={styles.loginRow}>
+        <View style={styles.buttonRowContainer}>
           <Button
             // onPress={() => {
             //   navigation.navigate("Home");
             // }}
+            style={{ borderRadius: '10%', height: '31%', justifyContent: 'center', backgroundColor:'#5F32D1' }}
+            mode={'contained'}
+            width={280}
+            labelStyle={{ fontSize: 20 }}
+            // disabled={email != '' && password != '' ? false : true}
             onPress={async () => {
                 try {
                     await signIn(email, password);
@@ -88,36 +101,46 @@ function SignupBox({navigation}) {
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View style={styles.loginContainer}>
          <View style={styles.loginRow}>
-          <Image source={logo} style={{ width: 300, height: 200 }}/>
+          <Image source={logo} style={styles.logoImage}/>
         </View>
-        <Text style={styles.loginHeaderText}>Sign Up</Text>
+        {/* <Text style={styles.loginHeaderText}>Sign Up</Text> */}
         <View style={styles.loginRow}>
-          <View style={styles.loginLabelContainer}>
+          {/* <View style={styles.loginLabelContainer}>
             <Text style={styles.loginLabelText}>Name: </Text>
-          </View>
+          </View> */}
           <View style={styles.loginInputContainer}>
             <TextInput 
               style={styles.loginInputBox}
-              placeholder='enter display name' 
-              autoCapitalize='none'
+              // placeholder='enter display name' 
+              autoCapitalize="words"
               spellCheck={false}
               onChangeText={text=>setName(text)}
               value={name}
+              label="Name"
+              mode='outlined'
+              outlineColor = '#E092DF'
+              activeOutlineColor='#D952D8'
+              outlineStyle={{ borderRadius:'10%' }}
             />
           </View>
         </View>
         <View style={styles.loginRow}>
-          <View style={styles.loginLabelContainer}>
+          {/* <View style={styles.loginLabelContainer}>
             <Text style={styles.loginLabelText}>Email: </Text>
-          </View>
+          </View> */}
           <View style={styles.loginInputContainer}>
             <TextInput 
               style={styles.loginInputBox}
-              placeholder='enter email address' 
               autoCapitalize='none'
               spellCheck={false}
               onChangeText={text=>setEmail(text)}
               value={email}
+              label='Email'
+              mode='outlined'
+              outlineColor = '#E092DF'
+              activeOutlineColor='#D952D8'
+              outlineStyle={{ borderRadius:'10%' }}
+
             />
           </View>
         </View>
@@ -127,24 +150,28 @@ function SignupBox({navigation}) {
            style={styles.container}
         > */}
         <View style={styles.loginRow}>
-          <View style={styles.loginLabelContainer}>
+          {/* <View style={styles.loginLabelContainer}>
             <Text style={styles.loginLabelText}>Password: </Text>
-          </View>
+          </View> */}
           <View style={styles.loginInputContainer}>
             <TextInput 
               style={styles.loginInputBox}
-              placeholder='enter password' 
               autoCapitalize='none'
               spellCheck={false}
               secureTextEntry={true}
               onChangeText={text=>setPassword(text)}
               value={password}
+              label='Password'
+              mode='outlined'
+              outlineColor = '#E092DF'
+              activeOutlineColor='#D952D8'
+              outlineStyle={{ borderRadius:'10%' }}
+
             />
           </View>
         </View>
-                {/* </KeyboardAvoidingView> */}
-
-        <View style={styles.loginRow}>
+            {/* </KeyboardAvoidingView> */}
+        <View style={styles.buttonRowContainer}>
           <Button
             onPress={async () => {
               try {
@@ -156,8 +183,14 @@ function SignupBox({navigation}) {
                 Alert.alert("Sign Up Error", error.message, [{ text: "OK" }])
               }
             }}
+            mode='contained'
+            width={280}
+            style={{ borderRadius: '10%', height: '30%', justifyContent: 'center', backgroundColor:'#5F32D1' }}
+            labelStyle={{ fontSize: 16 }}
+            
+            // disabled={name !== '' && email !== '' && password !== '' ? false : true}
           >
-            Sign Up
+            SIGN UP
           </Button>  
         </View>
       </View>
@@ -190,23 +223,21 @@ function LoginScreen({navigation}) {
         }
       </View>
 
-        <View styles={styles.modeSwitchContainer}>
+        <View style={styles.modeSwitchContainer}>
             { loginMode ? 
-            <Text style={{marginBottom: '5%'}}>New user? 
-                <Text 
-                onPress={()=>{setLoginMode(!loginMode)}} 
-                style={{color: 'blue'}}> Sign up </Text> 
-                instead!
+            <Text>New user? 
+                <Text  onPress={()=>{setLoginMode(!loginMode)}} style={{color: '#5F32D1', fontWeight:'bold'}}> Sign up </Text> 
+                here
             </Text>
             :
             <Text>Returning user? 
                 <Text 
-                onPress={()=>{setLoginMode(!loginMode)}} 
-                style={{color: 'blue', marginTop: '10%'}}> Sign in </Text> 
-                instead!
+                  style={{color: '#5F32D1', fontWeight:'bold'}}
+                  onPress={()=>{setLoginMode(!loginMode)}} 
+                > Sign in </Text> 
+                here
             </Text>
             }
-
             {/* <Button
                 title='Just go in anyway'
                 onPress={()=>navigation.navigate('Home')}
@@ -220,15 +251,22 @@ function LoginScreen({navigation}) {
 const styles = StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: '#fff',
+      backgroundColor: '#FFFAFE',
       alignItems: 'center',
       // justifyContent: 'center',
-      // backgroundColor:'pink'
+      // backgroundColor:'pink',
+    },
+    logoImage: {
+      width: 300,
+      height: 168,
+      marginBottom: '10%'
     },
     bodyContainer: {
       flex: 0.8,
-      justifyContent: 'center',
-      alignItems: 'center',
+      width: '80%',
+      // justifyContent: 'center',
+      // alignItems: 'center',
+
       // backgroundColor:'lightblue',
     },
     loginContainer: {
@@ -238,6 +276,7 @@ const styles = StyleSheet.create({
       width: '100%',
       paddingTop: '30%',
       paddingBottom: '10%',
+      // backgroundColor:'green'
     },
     loginHeader: {
       width: '100%',
@@ -252,44 +291,49 @@ const styles = StyleSheet.create({
     },
     loginRow: {
       flexDirection: 'row',
-      justifyContent: 'flex-start',
+      justifyContent: 'center',
       alignItems: 'center',
       width: '100%',
-      padding: '3%'
+      padding: '3%',
+      // backgroundColor: 'orange'
     },
-    loginLabelContainer: {
-      flex: 0.3,
-      justifyContent: 'center',
-      alignItems: 'flex-end'
-    },
-    loginLabelText: {
-      fontSize: 18
-    },
+    // loginLabelContainer: {
+    //   flex: 0.3,
+    //   justifyContent: 'center',
+    //   alignItems: 'flex-end'
+    // },
+    // loginLabelText: {
+    //   fontSize: 14
+    // },
     loginInputContainer: {
-      flex: 0.5,
+      flex: 1,
       justifyContent: 'center',
-      alignItems: 'flex-start',
-      width: '100%'
+      alignItems: 'center',
+      width: '100%',
+      // flexSize: 10,
+      // backgroundColor:'blue'
     },
     loginInputBox: {
       width: '100%',
-      borderColor: 'lightgray',
-      borderWidth: 1,
-      borderRadius: 6,
-      fontSize: 18,
-      padding: '2%'
+      // borderColor: 'pink',
+      // borderWidth: 1,
+      // fontSize: 14,
+      // padding: '2%'
     },
     modeSwitchContainer:{
       flex: 0.2,
       justifyContent: 'center',
       alignItems: 'center',
       width: '100%',
-      backgroundColor: 'pink'
+      // backgroundColor: 'yellow'
     },
     loginButtonRow: {
       width: '100%',
       justifyContent: 'center', 
-      alignItems: 'center'
+      alignItems: 'center',
+    },
+    buttonRowContainer: {
+      marginTop:'10%',
     },
     listContainer: {
       flex: 0.7, 
