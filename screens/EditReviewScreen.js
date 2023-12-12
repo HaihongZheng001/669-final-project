@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TextInput, KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard, FlatList, keyExtractor, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TextInput, KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard, FlatList, keyExtractor, TouchableOpacity, ScrollView, Modal } from 'react-native';
 // import { Button } from '@rneui/themed';
 import { generalStyles } from '../styles/Styles';
 import { Header } from '../components/Header';
@@ -41,6 +41,12 @@ function EditReviewScreen(props) {
   const [termSuggestions, setTermSuggestions] = useState([]);
   const [courseId, setCourseId] = useState(null)
   const [instructorId, setInstructorId] = useState(null)
+  const [courseIds, setCourseIds] = useState([])
+  const [instructorIds, setInstructorIds] = useState([])
+  const [showWarninng, setShowWarning] = useState(false)
+  const [warning, setWarning] = useState([])
+
+  
 
   // const { courseObj } = route.params || null;
   // console.log('!!!courseObj in edit review', courseObj)
@@ -59,6 +65,120 @@ function EditReviewScreen(props) {
     // console.log('instructors in review page!!!', state.instructors)
     return state.instructors
   })
+
+
+  const validateYear = (yearString) => {
+    // Regular expression for a four-digit number
+    const fourDigitRegex = /^\d{4}$/;
+  
+    if (!fourDigitRegex.test(yearString)) {
+      return "🗓️ Year must be a four-digit number";
+    }
+  
+    const year = parseInt(yearString, 10);
+    const currentYear = new Date().getFullYear();
+  
+    if (year < 1996 || year > currentYear) {
+      return `🗓️ Year must be between 1996 and ${currentYear}`;
+    }
+  
+    return ""; // No error
+  };
+
+  const validateTerm = (termInput ) => {
+    const validTerms = ['Fall', 'Winter', 'Summer', 'Spring', 'Spring/Summer'];
+  
+    if (!validTerms.includes(termInput)) {
+      return '🧐 Term must be one of the following: Fall, Winter, Summer, Spring, Spring/Summer';
+    }
+    return ""; // No error
+  };
+
+  const validateInstructorAndCourses = (targetInputList, instructorIdInput, validatingName) => {
+    if (!targetInputList.includes(instructorIdInput)) {
+      return `🥺 Select ${validatingName} from the dropdown list`;
+    } 
+    return "";
+  }
+
+  const validateReviewContent = (valueInput) => {
+      if ( valueInput && valueInput.length > 0) {
+        return "";
+      }
+      return '✍️ Add Review content.'
+}
+
+const validateRating = (ratingInput) => {
+  if (ratingInput === 0) {
+    return '⭐️ Add rating.'
+  }
+  return ""
+}
+
+
+
+  //instructorIds, courseIds,
+  const validateAll = (theCourseId, theYear, theTerm, theInstructorId, theRating, theReviewContent, allCourseIds, allInsturtcorIds) => {
+    let validationResponse = [];
+
+    let courseValidateResult = (!theCourseId && !theYear) ? validateInstructorAndCourses(allCourseIds, theCourseId, 'Course Name') : '';
+    if (courseValidateResult.length > 0) {
+        validationResponse.push(courseValidateResult);
+    }
+
+    // Validate Year
+    const yearValidatingResult = validateYear(theYear);
+    if (yearValidatingResult.length > 0) {
+        validationResponse.push(yearValidatingResult);
+    }
+
+    // Validate Term
+    const termValidatingResult = validateTerm(theTerm);
+    if (termValidatingResult.length > 0) {
+        validationResponse.push(termValidatingResult);
+    }
+
+    // Validate Instructor
+    const instructorValidatingResult = validateInstructorAndCourses(allInsturtcorIds, theInstructorId, 'Instructor');
+    if (instructorValidatingResult.length > 0) {
+        validationResponse.push(instructorValidatingResult);
+    }
+
+    // Validate Rating
+    const ratingValidateResult = validateRating(theRating);
+    if (ratingValidateResult.length > 0) {
+        validationResponse.push(ratingValidateResult);
+    }
+
+    // Validate Review Content
+    const reviewContentValidatingResult = validateReviewContent(theReviewContent);
+    if (reviewContentValidatingResult.length > 0) {
+        validationResponse.push(reviewContentValidatingResult);
+    }
+
+    return validationResponse;
+};
+
+
+  // const validateAll = (theCourseId, theYear, theTerm, theInstructorId, theRating, theReviewContent, allCourseIds, allInsturtcorIds) => {
+  //   let validationResponse = []
+  //   let courseValidateResult = '';
+  //   if (!reviewObj && !courseId) {
+  //     courseValidateResult = validateInstructorAndCourses(allCourseIds, theCourseId, 'Course Name')
+  //   }
+    
+  //   //checing year: four digit and between 1996 - current year(user input is string)
+  //   const yearValidatingResult = validateYear(theYear)
+  //   //checking term: should be among the four terms in the terms list
+  //   const termValidatingResult = validateTerm(theTerm)
+  //   //checking instructor: should be among the list - > get instructor id list
+  //   const instructorValidatingResult = validateInstructorAndCourses(allInsturtcorIds, theInstructorId, 'Instructor')
+  //   //checking rating
+  //   const ratingValidateResult = validateRating(theRating)
+  //   //checking review content : cannot be null
+  //   const reviewContentValidatingResult = validateReviewContent(theReviewContent)
+    
+  // }
 
 
   useEffect(()=>{
@@ -89,6 +209,12 @@ function EditReviewScreen(props) {
       setCourseName(courseObj.name)
       setCourseId(courseObj.id)
     }
+    if (courses && courses.length > 0) {
+      // console.log('log courses',courses)
+      const result = courses.map(c => c.id)
+      // console.log('course ids', result)
+      setCourseIds(result)
+    }
   }, [courses])
 
   useEffect(() => {
@@ -98,6 +224,12 @@ function EditReviewScreen(props) {
 
     if (reviewObj) {
       setInstructorId(reviewObj.instructorId)
+    }
+    if (instructors && instructors.length > 0) {
+      // console.log('log instructors',instructors)
+      const result = instructors.map(i => i.id)
+      // console.log('instructor id list', result)
+      setInstructorIds(result)
     }
   }, [instructors])
 
@@ -399,6 +531,28 @@ function EditReviewScreen(props) {
           </View>
         </View>
 
+   
+        {showWarninng ?<View style={styles.centeredView}>
+          <Modal
+            animationType='fade'
+            transparent={true}
+            visible={showWarninng}
+            >
+            <View style={styles.centeredView}>
+              <View style={styles.modalView}>
+                <Text style={{ marginBottom:'8%', alignSelf:'center', fontSize:16, fontWeight:'bold' }}>👀 To submit...  </Text>
+                {warning?.map((item, index) => ( 
+                    <Text style={{ marginBottom:'5%' }} key={index}>{item}</Text>
+                ))}
+                <View style={{ marginTop:'6%', marginBottom:'6%', alignSelf:'center' }}>
+                  <Button mode='contained' style={{ backgroundColor:'#BF52BE' }}onPress={()=>setShowWarning(false)}>Okay</Button>
+                </View>
+
+                </View>
+              </View>
+              
+          </Modal>
+        </View> : null}
 
         <View style={styles.pairButtonContainer}>
           <Button
@@ -431,40 +585,49 @@ function EditReviewScreen(props) {
               // console.log(rating)
               // console.log(reviewContent)
 
-              //todo: checking if user has valid input, 
-              if (reviewObj && Object.keys(reviewObj).length !== 0) {
-                console.log('uodating!!')
-                dispatch(updateReview({
-                  ...reviewObj,
-                  courseId: courseId,
-                  year: year,
-                  term: term,
-                  instructorId: instructorId,
-                  rating: rating,
-                  reviewContent: reviewContent,
-                }))
-                navigation.navigate('Account', { screen: 'MyReviews'})
+              //todo: checking if user has valid input
+              const validateAllResult = validateAll(courseId, year, term, instructorId, rating, reviewContent, courseIds, instructorIds)
+              if (validateAllResult && validateAllResult.length === 0) {
 
+                if (reviewObj && Object.keys(reviewObj).length !== 0) {
+                  // console.log('uodating!!')
+                  dispatch(updateReview({
+                    ...reviewObj,
+                    courseId: courseId,
+                    year: year,
+                    term: term,
+                    instructorId: instructorId,
+                    rating: rating,
+                    reviewContent: reviewContent,
+                  }))
+                  navigation.navigate('Account', { screen: 'MyReviews'})
+
+
+                } else {
+                  dispatch(addReview({
+                    userUid: loginUser.uid,
+                    courseId: courseId,
+                    year: year,
+                    term: term,
+                    instructorId: instructorId,
+                    rating: rating,
+                    reviewContent: reviewContent,
+                  }));
+                  // const time = Date.now()
+                  // console.log('add review', time)
+                  navigation.navigate('HomePage')
+                }
 
               } else {
-                dispatch(addReview({
-                  userUid: loginUser.uid,
-                  courseId: courseId,
-                  year: year,
-                  term: term,
-                  instructorId: instructorId,
-                  rating: rating,
-                  reviewContent: reviewContent,
-                }));
-                // const time = Date.now()
-                // console.log('add review', time)
-                navigation.navigate('HomePage')
+                console.log(validateAllResult)
+                setWarning(validateAllResult)
+                setShowWarning(true)
+
               }
             }}
           >
             Submit
           </Button> 
-          
         </View> 
 
        
@@ -484,6 +647,31 @@ const styles = StyleSheet.create({
   height: '50%', // Adjust the height of the overlay
   justifyContent: 'center',
   alignItems: 'center',
+},
+centeredView: {
+  flex: 1,
+  justifyContent: 'center',
+  alignItems: 'center',
+  marginTop: 0,
+  backgroundColor:'rgba(0, 0, 0, 0.6)',
+},
+modalView: {
+  margin: 20,
+  backgroundColor: 'white',
+  borderRadius: 20,
+  padding: 35,
+  alignItems: 'flex-start',
+  backgroundColor:'#FFF3D4',
+  
+  // justifyContent:'flex-start',
+  shadowColor: '#000',
+  shadowOffset: {
+    width: 0,
+    height: 2,
+  },
+  shadowOpacity: 0.25,
+  shadowRadius: 4,
+  elevation: 5,
 },
 
 });
