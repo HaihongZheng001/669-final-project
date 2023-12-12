@@ -2,8 +2,9 @@ import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import { generalStyles } from '../styles/Styles';
 import { Ionicons } from '@expo/vector-icons';
 
+
 export function Header(props) {
-    const { title, showBackButton, navigation, route } = props
+    const { title, showBackButton, navigation, route, showFilter } = props
     
     return (
         <View style={styles.header}>
@@ -14,7 +15,7 @@ export function Header(props) {
                         navigation.goBack();
                     }
                 }}>
-                    <Ionicons name="chevron-back" style={styles.headerIcon}/>
+                    <Ionicons name="chevron-back" style={[styles.headerIcon, { color: '#4C338F' }]} />
                 </TouchableOpacity>
                 :null
             }
@@ -25,7 +26,7 @@ export function Header(props) {
                 {title} 
                 </Text>
             </View>
-            <View style={styles.headerRight}/>
+            <View style={styles.headerRight}></View>
         </View>
     )
 }
