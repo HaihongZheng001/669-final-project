@@ -6,7 +6,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { useEffect, useState } from 'react';
-import { deleteReview, loadLoginUserReviews } from '../data/Actions';
+import { deleteReview } from '../data/Actions';
 import { useDispatch } from 'react-redux';
 
 
@@ -15,7 +15,6 @@ export function ReviewCard(props) {
     const { navigation, route, reviewObj, courseObjs, showAnimation } = props
     const courseObj = courseObjs && courseObjs.filter(courseObj => courseObj.id === reviewObj.courseId)[0]
     const dispatch = useDispatch();
- 
 
     return (
 
@@ -39,25 +38,28 @@ export function ReviewCard(props) {
                 </View>
             }
             <View style={styles.accountItemContainer}>
-                <View style={styles.iconContainer}>
+                <View style={styles.iconContainerCancel}>
                     <TouchableOpacity
                         onPress={() => {
+                            // console.log('rebiew obj to delete',reviewObj)
                             dispatch(deleteReview(reviewObj));
                             // navigation.navigate('HomePage')
                         }}
                     
                     >
-                        <MaterialCommunityIcons name="delete" size={22} color="black" />
+                        <MaterialCommunityIcons name="delete" size={22} color="#734109" />
                     </TouchableOpacity>
 
                 </View>
 
-                <View style={styles.iconContainer}>
+                <View style={styles.iconContainerEdit}>
                     <TouchableOpacity
-                        onPress={() => navigation.navigate('Home', { screen: 'EditReview', params: { reviewObj: reviewObj, preScreen: 'MyReviews' }
-                    })}
+                        onPress={() => {
+                            // console.log('okii!')
+                            navigation.navigate('Home', { screen: 'EditReview', params: { reviewObj: reviewObj, prevScreen: 'MyReviews' }})
+                    }}
                     >
-                        <MaterialIcons name="edit" size={22} color="black" />
+                        <MaterialIcons name="edit" size={22} color="#4118A8" />
                     </TouchableOpacity>
                     
                 </View>
@@ -69,14 +71,14 @@ export function ReviewCard(props) {
 const styles = StyleSheet.create({
     ...generalStyles,
     reviewCardContainer: {
-        // borderWidth: 1,
-        // borderColor: 'lightgrey',
-        // borderBottomColor: 'lightgrey',
+        borderWidth: 1.5,
+        // borderColor: '#4118A8',
         marginBottom: '6%',
-        backgroundColor: '#FAF6F0',
-        // borderRadius: 8,
-        padding: '6%',
-        paddingTop:'0%'
+        // backgroundColor: 'pink',
+        borderColor:'#A592D4',
+        borderRadius: '8%',
+        padding: '4%',
+        paddingTop:'0%',
         // paddingBottom: '0%',
     },
     reviewCardTitleContainer: {
@@ -86,13 +88,17 @@ const styles = StyleSheet.create({
 
     },
     cardTitleLabel: {
-        fontWeight: 'bold',
-        marginBottom: '3%',
+        fontWeight: '700',
+        marginBottom: '4%',
+        color: '#4C338F',
+        fontSize: 14,
+        // backgroundColor:'green'
 
 
     },
     cardDetailLabel: {
-        fontSize: 13
+        fontSize: 13,
+        lineHeight: 20
     },
     reviewCardDetailTimeContainer: {
         flexDirection: 'row',
@@ -102,15 +108,27 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between', 
         alignItems: 'center', 
-        backgroundColor: 'lightblue',
+        // backgroundColor: 'lightblue',
     },
-    iconContainer: {
-        width: 40,  // Diameter of the circle
-        height: 40, // Same as width
+    iconContainerCancel: {
+        width: 50,  // Diameter of the circle
+        height: 50, // Same as width
         borderRadius: 25, // Half of width/height
-        backgroundColor: 'lightgrey', // Circle color
+        backgroundColor: '#F0D8BD', // Circle color
         justifyContent: 'center', // Center the icon horizontally
-        alignItems: 'center', 
+        alignItems: 'center',
+        marginTop:'4%'
+        // backgroundColor:'blue'
+    },
+    iconContainerEdit: {
+        width: 50,  // Diameter of the circle
+        height: 50, // Same as width
+        borderRadius: 25, // Half of width/height
+        backgroundColor: '#E7DBFF', // Circle color
+        justifyContent: 'center', // Center the icon horizontally
+        alignItems: 'center',
+        marginTop:'4%'
+        // backgroundColor:'blue'
     },
     itemTitleText: {
         fontSize: 14,
@@ -129,6 +147,7 @@ const styles = StyleSheet.create({
     cardDetailTimeLabel: {
         marginRight: '1%',
         fontSize: 13,
+        color: '#4118A8',
     }
 
 })
