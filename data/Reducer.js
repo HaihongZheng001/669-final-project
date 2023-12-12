@@ -4,10 +4,11 @@ const UPDATE_USER = 'UPDATE_USER';
 const LOAD_COURSES = 'LOAD_COURSES';
 const LOAD_INSTRUCTORS = 'LOAD_INSTRUCTORS';
 const ADD_REVIEW = 'ADD_REVIEW';
-const LOAD_LOGIN_USER_REVIEWS = 'LOAD_LOGIN_USER_REVIEWS';
-const LOAD_COURSE_REVIEWS = 'LOAD_COURSE_REVIEWS';
+// const LOAD_LOGIN_USER_REVIEWS = 'LOAD_LOGIN_USER_REVIEWS';
+// const LOAD_COURSE_REVIEWS = 'LOAD_COURSE_REVIEWS';
 const UPDATE_REVIEW = 'UPDATE_REVIEW';
 const DELETE_REVIEW  = 'DELETE_REVIEW';
+const LOAD_REVIEWS = 'LOAD_REVIEWS'
 
 
 
@@ -16,8 +17,8 @@ const initialState = {
   courses: [],
   instructors: [],
   reviews: [],
-  loginUserReviews: [],
-  courseReviews: []
+  // loginUserReviews: [],
+  // courseReviews: []
 }
 
 const addUser = (state, newUser) => {
@@ -37,6 +38,14 @@ const loadUsers = (state, users) => {
   }
 }
 
+const loadReviews = (state, reviews) => {
+  return {
+    ...state, 
+    reviews: [...reviews]
+  }
+}
+
+
 const loadCourses = (state, courses) => {
   return {
     ...state, 
@@ -44,19 +53,19 @@ const loadCourses = (state, courses) => {
   }
 }
 
-const loadLoginUserReviews = (state, loginUserReviews) => {
-  return {
-    ...state, 
-    loginUserReviews: loginUserReviews
-  }
-}
+// const loadLoginUserReviews = (state, loginUserReviews) => {
+//   return {
+//     ...state, 
+//     loginUserReviews: loginUserReviews
+//   }
+// }
 
-const loadCourseReviews = (state, courseReviews) => {
-  return {
-    ...state, 
-    courseReviews: courseReviews
-  }
-}
+// const loadCourseReviews = (state, courseReviews) => {
+//   return {
+//     ...state, 
+//     courseReviews: courseReviews
+//   }
+// }
 
 const loadInstructors = (state, instructors) => {
   return {
@@ -164,16 +173,18 @@ const rootReducer = (state=initialState, action) => {
       return loadInstructors(state, action.payload.newInstructors);
     case ADD_REVIEW:
       return addReview(state, action.payload.review);
-    case LOAD_LOGIN_USER_REVIEWS:
-      return loadLoginUserReviews(state, action.payload.loginUserReviews);
-    case LOAD_COURSE_REVIEWS:
-      return loadCourseReviews(state, action.payload.courseReviews)
-    case UPDATE_REVIEW:
+    // case LOAD_LOGIN_USER_REVIEWS:
+    //   return loadLoginUserReviews(state, action.payload.loginUserReviews);
+    // case LOAD_COURSE_REVIEWS:
+    //   return loadCourseReviews(state, action.payload.courseReviews)
+    // case UPDATE_REVIEW:
       return updateReview(state, action.payload.id, action.payload.review);
     case DELETE_REVIEW:
       return deleteReview(state, action.payload.review);
+      case LOAD_REVIEWS:
+        return loadReviews(state, action.payload.newReviews);
     default:
       return state;
   }
 }
-export { rootReducer, ADD_USER, LOAD_USERS, UPDATE_USER, LOAD_COURSES, LOAD_INSTRUCTORS, ADD_REVIEW, LOAD_LOGIN_USER_REVIEWS, LOAD_COURSE_REVIEWS, UPDATE_REVIEW, DELETE_REVIEW };
+export { rootReducer, ADD_USER, LOAD_USERS, UPDATE_USER, LOAD_COURSES, LOAD_INSTRUCTORS, ADD_REVIEW, UPDATE_REVIEW, DELETE_REVIEW, LOAD_REVIEWS };

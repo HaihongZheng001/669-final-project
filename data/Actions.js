@@ -1,7 +1,7 @@
 import { initializeApp } from 'firebase/app';
 import { addDoc, updateDoc,setDoc, doc, getFirestore, collection, onSnapshot, getDocs, query, where, serverTimestamp, getDoc, deleteDoc } from 'firebase/firestore';
 // import { firebaseConfig } from '../Secrets';
-import { ADD_USER, LOAD_USERS, UPDATE_USER, ADD_REVIEW, LOAD_COURSES, LOAD_INSTRUCTORS, LOAD_LOGIN_USER_REVIEWS, LOAD_COURSE_REVIEWS, UPDATE_REVIEW, DELETE_REVIEW } from './Reducer';
+import { ADD_USER, LOAD_USERS, UPDATE_USER, ADD_REVIEW, LOAD_COURSES, LOAD_INSTRUCTORS,UPDATE_REVIEW, DELETE_REVIEW, LOAD_REVIEWS } from './Reducer';
 import { app, db, auth } from '../firebase';
 import { Firestore, arrayUnion } from 'firebase/firestore';
 
@@ -96,6 +96,24 @@ const loadUsers = () => {
   }
 }
 
+const loadReviews = () => {
+  return async (dispatch) => {
+    let querySnapshot = await getDocs(collection(db, 'reviews'));
+    let newReviews = querySnapshot.docs.map(docSnap => {
+      return {
+        ...docSnap.data(),
+        // key: docSnap.id
+      }
+    });
+    dispatch({
+      type: LOAD_REVIEWS,
+      payload: {
+        newReviews: newReviews
+      }
+    });
+  }
+}
+
 const loadCourses = () => {
   return async (dispatch) => {
     let querySnapshot = await getDocs(collection(db, 'courses'));
@@ -115,66 +133,67 @@ const loadCourses = () => {
 }
 
 //? need to improve
-const loadLoginUserReviews = (uid) => {
-  return async (dispatch) => {
-    const q = query(collection(db, 'users'), where('uid', '==', uid));
-    const querySnapshot = await getDocs(q);
-    const userDoc = querySnapshot.docs[0];
-    const userDocRef = doc(db, 'users', userDoc.id);
+// const loadLoginUserReviews = (uid) => {
+//   return async (dispatch) => {
+//     const q = query(collection(db, 'users'), where('uid', '==', uid));
+//     const querySnapshot = await getDocs(q);
+//     const userDoc = querySnapshot.docs[0];
+//     const userDocRef = doc(db, 'users', userDoc.id);
 
-    const userDocSnapshot = await getDoc(userDocRef);
-    const reviewIds = userDocSnapshot.data().myReviews || [];
-    // console.log('@@@@@!!reviewIds', reviewIds)
+//     const userDocSnapshot = await getDoc(userDocRef);
+//     const reviewIds = userDocSnapshot.data().myReviews || [];
+//     // console.log('@@@@@!!reviewIds', reviewIds)
 
-    const reviews = [];
+//     const reviews = [];
 
-    for (const reviewId of reviewIds) {
-      const reviewDocRef = doc(db, 'reviews', reviewId); // 'reviews' is the collection name
-      const reviewDocSnapshot = await getDoc(reviewDocRef);
-      if (reviewDocSnapshot.exists()) {
-        const reviewData = reviewDocSnapshot.data();
-        reviews.push(reviewData);
-      }
-    }
-    // console.log('@@@actions', reviews)
+//     for (const reviewId of reviewIds) {
+//       const reviewDocRef = doc(db, 'reviews', reviewId); // 'reviews' is the collection name
+//       const reviewDocSnapshot = await getDoc(reviewDocRef);
+//       if (reviewDocSnapshot.exists()) {
+//         const reviewData = reviewDocSnapshot.data();
+//         reviews.push(reviewData);
+//       }
+//     }
 
-    // let querySnapshot = await getDocs(collection(db, 'reviews'));
-    // let newReviews = querySnapshot.docs.map(docSnap => {
-    //   return {
-    //     ...docSnap.data(),
-    //     // key: docSnap.id
-    //   }
-    // });
+//     // console.log('@@@actions', reviews)
+
+//     // let querySnapshot = await getDocs(collection(db, 'reviews'));
+//     // let newReviews = querySnapshot.docs.map(docSnap => {
+//     //   return {
+//     //     ...docSnap.data(),
+//     //     // key: docSnap.id
+//     //   }
+//     // });
     
-    dispatch({
-      type: LOAD_LOGIN_USER_REVIEWS,
-      payload: {
-        loginUserReviews: reviews
-      }
-    });
-  }
-}
+//     dispatch({
+//       type: LOAD_LOGIN_USER_REVIEWS,
+//       payload: {
+//         loginUserReviews: reviews
+//       }
+//     });
+//   }
+// }
 
-const loadCourseReviews = (courseId) => {
+// const loadCourseReviews = (courseId) => {
   
-  return async (dispatch) => {
-    console.log("Course ID:", courseId);
+//   return async (dispatch) => {
+//     console.log("Course ID:", courseId);
 
-    const q = query(collection(db, 'reviews'), where('courseId', '==', courseId));
-    const querySnapshot = await getDocs(q);
-    const reviews = querySnapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
-    }));
+//     const q = query(collection(db, 'reviews'), where('courseId', '==', courseId));
+//     const querySnapshot = await getDocs(q);
+//     const reviews = querySnapshot.docs.map(doc => ({
+//       id: doc.id,
+//       ...doc.data()
+//     }));
     
-    dispatch({
-      type: LOAD_COURSE_REVIEWS,
-      payload: {
-        courseReviews: reviews
-      }
-    });
-  }
-}
+//     dispatch({
+//       type: LOAD_COURSE_REVIEWS,
+//       payload: {
+//         courseReviews: reviews
+//       }
+//     });
+//   }
+// }
 
 
 // !!functions to load subcollection in courses
@@ -270,14 +289,25 @@ const updateReview = (updatedReview) => {
 const deleteReview = (reviewObj) => {
   return async (dispatch, getState) => {
     let users = getState().users;
+    // console.log('get users', users)
     let userId = users.find(u => u.uid === reviewObj.userUid).id
+    console.log('heihei!')
+    console.log('get user ID', userId)
+
     if (users) {
       users.forEach(u => {
         if (u && u.myReviews) {
           u.myReviews.forEach(async r => {
+            // console.log('my reviews!!', u.myReviews)
+            console.log('each review id!!', r)
+            console.log('deleted review obj id!!', reviewObj.id)
+
             if (r === reviewObj.id) {
+              console.log(`log r & review.id, ${r} and ${reviewObj.id}`)
               let newU = {...u, myReviews: u.myReviews.filter(r => r !== reviewObj.id)};
+              console.log('new User Obj!!!', newU)
               await updateDoc(doc(db, 'users', userId), newU);
+              console.log('delete from users myReviews')
             }
           });
         }
@@ -296,4 +326,4 @@ const deleteReview = (reviewObj) => {
 
 
 
-export { addUser, updateUser, loadUsers, addReview, loadCourses, loadInstructors, loadLoginUserReviews, loadCourseReviews, updateReview, deleteReview }
+export { addUser, updateUser, loadUsers, addReview, loadCourses, loadInstructors, updateReview, deleteReview, loadReviews }
