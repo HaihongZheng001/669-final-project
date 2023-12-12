@@ -1,13 +1,14 @@
 
 import { useState, useEffect } from 'react';
 import { View, Text, TextInput, StyleSheet, Alert, KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard,} from 'react-native';
-import { Button } from '@rneui/themed';
+// import { Button } from '@rneui/themed';
 import { signIn, signUp, subscribeToAuthChanges } from '../AuthManager';
 import { Header } from '../components/Header';
 import { generalStyles } from '../styles/Styles';
 import { useSelector, useDispatch } from 'react-redux';
 import { loadUsers, updateUser } from '../data/Actions';
 import { getAuth } from 'firebase/auth';
+import { Button } from 'react-native-paper';
 
 function EditProfileScreen( props ) {
   const { navigation, route } = props;
@@ -79,7 +80,7 @@ function EditProfileScreen( props ) {
               spellCheck={false}
               value={curUserName}
               editable={false}
-              backgroundColor={'lightgrey'}
+              backgroundColor={'#F3EDFF'}
               color={'grey'}
             />
           </View>
@@ -96,7 +97,7 @@ function EditProfileScreen( props ) {
               spellCheck={false}
               value={loginUser? loginUser.email : 'placeholder'}
               editable={false}
-              backgroundColor={'lightgrey'}
+              backgroundColor={'#F3EDFF'}
               color={'grey'}
             />
           </View>
@@ -150,8 +151,21 @@ function EditProfileScreen( props ) {
           </View>
         </View>
   
-        <View style={styles.buttonContainer}>
+        <View style={styles.pairButtonContainer}>
           <Button
+            style={{ borderRadius: '6%', justifyContent: 'center', backgroundColor:'#A66319', width: '30%', }}
+            mode={'contained'}
+            labelStyle={{ fontSize: 14 }}
+            onPress={() =>{
+              navigation.navigate('AccountPage');
+            }}
+          >
+            Cancel
+          </Button>  
+          <Button
+            style={{ borderRadius: '6%', justifyContent: 'center',backgroundColor:'#5F32D1', width: '30%',}}
+            mode={'contained'}
+            labelStyle={{ fontSize: 14 }}
             onPress={() =>{
               dispatch(updateUser({
                 ...curUser,
@@ -166,15 +180,7 @@ function EditProfileScreen( props ) {
           </Button>  
         </View> 
 
-        <View style={styles.buttonContainer}>
-          <Button
-            onPress={() =>{
-              navigation.navigate('AccountPage');
-            }}
-          >
-            Cancel
-          </Button>  
-        </View> 
+        
 
       {/* </KeyboardAvoidingView> */}
       </View>
