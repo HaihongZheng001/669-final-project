@@ -23,7 +23,6 @@ import { Entypo } from '@expo/vector-icons';
 import { FAB } from 'react-native-paper';
 import { Ionicons } from '@expo/vector-icons';
 import { View } from "react-native";
-import ReviewFilterScreen from "./screens/ReviewFilterScreen";
 
 
 const store = configureStore({
@@ -166,7 +165,6 @@ function HomeTabStack() {
             <HomeStack.Screen name='HomePage' component={HomeScreen}/>
             <HomeStack.Screen name='CourseReviews' component={CourseReviewsScreen}/>
             <HomeStack.Screen name='EditReview' component={EditReviewScreen}/>
-            <HomeStack.Screen name='ReviewFilter' component={ReviewFilterScreen}/>
             <HomeStack.Screen name='ExpandReview' component={ExpandReviewScreen}/>
 
         </HomeStack.Navigator>
