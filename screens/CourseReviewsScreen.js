@@ -11,7 +11,7 @@ import { FontAwesome } from '@expo/vector-icons';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import RBSheet from "react-native-raw-bottom-sheet";
 import { createDrawerNavigator } from '@react-navigation/drawer';
-import { Checkbox } from 'react-native-paper';
+import { CheckBox } from '@rneui/themed';
 import { Ionicons } from '@expo/vector-icons';
 // import { updateSuggestions, onSuggestionPress } from './dropdownUtils.js';
 // import { MultipleSelectList } from 'react-native-dropdown-select-list';
@@ -19,161 +19,81 @@ import { Ionicons } from '@expo/vector-icons';
 
 function CourseReviewsScreen(props) {
   const { navigation, route } = props;
-  const { courseId, isFiltered, checkedInstructors, checkedRatings, checkedTimes, sortingLogic } = route.params || {};
+  // const { courseId, isFiltered, checkedInstructors, checkedRatings, checkedTimes, sortingLogic } = route.params || {};
+    const { courseId } = route.params || {};
 
-  const [selectedTimes, setSelectedTimes] = useState([]);
+  
+
   const [initCourseReviews, setInitCourseReviews] = useState([]); 
-  const [userFilteredReviews, setUserFilteredReviews] = useState([])
   const [rating, setRating] = useState(0);
-  const [timeFilterOptions, setTimeFilterOptions] = useState([]);
-  const [ratingFilterOptions, setRatingFilterOptions] = useState([])
-  const [instructorFilterOptions, setInstructorFilterOptions] = useState([]);
-  const [ sortingChoice, setSortingChoice ] = useState('New to Old')
 
   const initUsers = useSelector(state => state.users)
   const reviews = useSelector(state => state.reviews)
   const initInstructors = useSelector(state => state.instructors)
 
-  const getUserFilteredReviews = () => {
+  const [timeFilterOptions, setTimeFilterOptions] = useState([]);
+  const [tempTimeFilterOptions, setTempTimeFilterOptions] = useState([])
+  const [ratingFilterOptions, setRatingFilterOptions] = useState([])
+  const [tempRatingFilterOptions, setTempRatingFilterOptions] = useState([])
+  const [instructorFilterOptions, setInstructorFilterOptions] = useState([]);
+  const [tempInstructorFilterOptions, setTempInstructorFilterOptions] = useState([])
+  const [sortingChoice, setSortingChoice ] = useState('New to Old')
+  const [tempSortingChoice, setTempSortingChoice] = useState('New to Old')
+  const [showFilter, setShowFilter] = useState(false)
+  const [isFilterActive, setIsFilterActive] = useState(false)
+  const [userFilteredReviews, setUserFilteredReviews] = useState([])
+
+
+
+
+  const getUserFilteredReviews = (checkedInstructors, checkedRatings, checkedTimes, checkedSorting) => {
+  
     if (initCourseReviews && checkedRatings && checkedTimes && checkedTimes.length > 0 && checkedInstructors && checkedInstructors.length > 0 ) {
-      // console.log('!!checked times', checkedTimes)
-      // console.log('checkedRatings', checkedRatings)
+      
       const checkedInstructorIds = checkedInstructors.filter(item => item.isChecked).map(ins => ins.id)
-      const checkedRatingsNew = checkedRatings.filter(item => item.isChecked).map(r => r.rating)
+      const checkedRatingsNew = checkedRatings.filter(item => item.isChecked).map(obj => obj.rating)
       const checkedYear = checkedTimes.filter(item => item.isChecked).map(t => t.year)
       const checkedTerm = checkedTimes.filter(item => item.isChecked).map(t => t.term)
-      // console.log('checkedInstructorIds', checkedInstructorIds)
-      // console.log('checked ratings', checkedRatings)
-      // console.log('checkedYear', checkedYear)
-      // console.log('checkedTerm', checkedTerm)
-      // const checkedReviews = initCourseReviews.filter(review => checkedInstructorIds.includes(review.instructorId) && checkedRatings.includes(review.rating) && checkedTerm.includes(review.term) && checkedYear.includes(review.year))
-      // console.log(initCourseReviews)
 
       const checkedReviews = initCourseReviews.filter(review => checkedTerm.includes(review.term) && checkedYear.includes(review.year) && checkedInstructorIds.includes(review.instructorId) && checkedRatingsNew.includes(review.rating))
-      // console.log('checked reviews', checkedReviews.length)
-      return checkedReviews
+      const sortedReviews = sortReviews(checkedReviews, checkedSorting)
+      console.log('---sorrted result', sortedReviews)
+
+      return sortedReviews
       
     }
   }
 
-  const getTimeFilterOptions = (inputReviews) => {
-    
-      // console.log('getting time options!!!')
-      let timeStrList = [];
-      inputReviews.map(reviewObj => {
-        const timeStr = reviewObj.term + ' ' + reviewObj.year
-        if (!timeStrList.includes(timeStr)) {
-          timeStrList.push(timeStr)
-        }
-      })
-      const result = timeStrList.map((str, index) => { 
-        const year = str.split(' ')[1]
-        const term = str.split(' ')[0]
-        return ({ isChecked: true, time: str,  year: year, term: term, id:index }) 
-      })
-      // console.log('time options!!!!!!', result)
-      return result
-      // setTimeFilterOptions(result)
+  const sortingOptions = [
+    { name: 'New to Old', logic: 'newToOld'},
+    { name: 'Old to New', logic: 'oldToNew' },
+    { name: 'High to Low', logic:'highToLoW' },
+    { name: 'Low to High', logic:'lowToHigh' },
+  ]
 
+  const checkFilterResultDiffers = (list1, list2, list3) => {
+    let areAllChecked1 = list1.every(obj => obj.isChecked === true);
+    let areAllChecked2 = list2.every(obj => obj.isChecked === true);
+    let areAllChecked3 = list3.every(obj => obj.isChecked === true);
+    let result = areAllChecked1 && areAllChecked2 && areAllChecked3
+    return !result;
   }
 
-  const getRatingFilterOptions = (inputReviews) => {
-    // console.log('getting rating options!!!')
-      let ratingList = []
-      inputReviews.map(reviewObj => {
-        if (!ratingList.includes(reviewObj.rating)) {
-          ratingList.push(reviewObj.rating)
-          // console.log('!!list', ratingList)
-        }
-      })
-      // console.log('rating list', ratingList)
-      const result = ratingList.map((r, index) => ({ rating: r, id:index, isChecked: true }))
-      // console.log('rating options!!!!', result)
-      return result
-      // setRatingFilterOptions(result)
-  }
-
-  const getInstructorFilterOptions = (inputReviews, inputInstructors) => {
-    // console.log('getting instuctors options!!! cur init course reviews value', initCourseReviews)
-      let idList = [];
-      inputReviews.map(reviewObj => {
-        if (!idList.includes(reviewObj.instructorId)) {
-          idList.push(reviewObj.instructorId)
-        }
-      })
-      // console.log('idList!!!!', idList)
-      const result = inputInstructors.filter(ins => idList.includes(ins.id)).map(obj=> ({ id: obj.id, name: obj.name, isChecked: true }))
-      // console.log('instructor options', result)
-      return result
-      // setInstructorFilterOptions(result)
-  }
+   
+  const toggleCheckbox = (setItems, items, pressedItem) => {
+      // console.log('item', pressedItem)
+      setItems(prev => {
+          const updatedItems = items.map(item => {
+              if (item.id === pressedItem.id) {
+                return { ...item, isChecked: !pressedItem.isChecked};
+              } else {
+                return item;
   
-
-  const dispatch = useDispatch();
-
-  useEffect(() => {
-    // dispatch(loadCourseReviews(courseId))
-    dispatch(loadUsers())
-    dispatch(loadInstructors())
-    dispatch(loadReviews())
-
-  }, [dispatch])
-
-
-
-  useEffect(() => {
-    // console.log('reviews', reviews)
-    const filteredReviews = reviews.filter(review => review.courseId === courseId)
-    // console.log('filteredReviews', filteredReviews)
-    if (filteredReviews && filteredReviews.length > 0 && initInstructors && initInstructors.length > 0) {
-      // console.log('enter filtered reviews length > 0')
-      // console.log('current init instructors', initInstructors)
-      setInitCourseReviews(prev => {
-        const sorted = sortReviews(filteredReviews, sortingChoice)
-        return sorted
-      })
-      getCourseRating(filteredReviews)
-      const iResult = getInstructorFilterOptions(filteredReviews, initInstructors)
-      const tResult = getTimeFilterOptions(filteredReviews)
-      const rResult = getRatingFilterOptions(filteredReviews)
-      setRatingFilterOptions(rResult)
-      setTimeFilterOptions(tResult)
-      setInstructorFilterOptions(iResult)
-    }
-  }, [reviews, initInstructors])
-
-  // useEffect(() => {
-  //   const iResult = getInstructorFilterOptions(initInstructors)
-  //   const tResult = getTimeFilterOptions(reviews)
-  //   const rResult = getRatingFilterOptions(reviews)
-  //   setRatingFilterOptions(rResult)
-  //   setTimeFilterOptions(tResult)
-  //   setInstructorFilterOptions(iResult)
-  // }, [reviews, initInstructors])
-
-
-
-  const courses = useSelector(state => {
-    return state.courses
-  })
-
-  const courseObj = courses.filter(course => course.id === courseId)[0]
-
-  const getCourseRating = (reviews) => {
-    let sum = 0;
-    for (let i = 0; i < reviews.length; i++) {
-        sum += parseInt(reviews[i].rating, 10);
-    }
-    const averageRating = sum / reviews.length;
-    setRating(averageRating)
-  }
-
-
-    // initCourseReviews ? getTimeFilterOptions():null
-
-  // initCourseReviews && initInstructors ? getInstructorFilterOptions() : null
-
-
+              }
+            })
+          return updatedItems
+      });
+  };
 
   const sortReviews = (reviewsToSort, curLogic) => {
     let result = [...reviewsToSort];
@@ -195,7 +115,7 @@ function CourseReviewsScreen(props) {
     if (curLogic === 'New to Old') {
       result.sort((a, b) => sortByYearAndTerm(a, b, true));
     } else if (curLogic === 'Old to New') {
-      result.sort((a, b) => sortByYearAndTerm(a, b));
+      result.sort((a, b) => sortByYearAndTerm(a, b, false));
     } else if (curLogic === 'High to Low') {
       result.sort((a, b) => b.rating - a.rating);
     } else if (curLogic === 'Low to High') {
@@ -203,29 +123,115 @@ function CourseReviewsScreen(props) {
     }
     return result;
   }
+  
+
+  const getTimeFilterOptions = (inputReviews) => {
+    
+      let timeStrList = [];
+      inputReviews.map(reviewObj => {
+        const timeStr = reviewObj.term + ' ' + reviewObj.year
+        if (!timeStrList.includes(timeStr)) {
+          timeStrList.push(timeStr)
+        }
+      })
+      const result = timeStrList.map((str, index) => { 
+        const year = str.split(' ')[1]
+        const term = str.split(' ')[0]
+        return ({ isChecked: true, time: str,  year: year, term: term, id:index }) 
+      })
+      return result
+      // setTimeFilterOptions(result)
+
+  }
+
+  const getRatingFilterOptions = (inputReviews) => {
+      let ratingList = []
+      inputReviews.map(reviewObj => {
+        if (!ratingList.includes(reviewObj.rating)) {
+          ratingList.push(reviewObj.rating)
+          // console.log('!!list', ratingList)
+        }
+      })
+      // console.log('rating list', ratingList)
+      const result = ratingList.map((r, index) => ({ rating: r, id:index, isChecked: true }))
+      const sortedResult = result.sort((a, b) => b.rating - a.rating)
+      return sortedResult
+      // setRatingFilterOptions(result)
+  }
+
+  const getInstructorFilterOptions = (inputReviews, inputInstructors) => {
+    // console.log('getting instuctors options!!! cur init course reviews value', initCourseReviews)
+      let idList = [];
+      inputReviews.map(reviewObj => {
+        if (!idList.includes(reviewObj.instructorId)) {
+          idList.push(reviewObj.instructorId)
+        }
+      })
+      // console.log('idList!!!!', idList)
+      const result = inputInstructors.filter(ins => idList.includes(ins.id)).map(obj=> ({ id: obj.id, name: obj.name, isChecked: true }))
+      // console.log('instructor options generating!', result)
+      return result
+      // setInstructorFilterOptions(result)
+  }
+  
+
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    // dispatch(loadCourseReviews(courseId))
+    dispatch(loadUsers())
+    dispatch(loadInstructors())
+    dispatch(loadReviews())
+
+  }, [])
+
+  useEffect(() => {
+    if ((isFilterActive && checkFilterResultDiffers) || (isFilterActive && sortingChoice !== 'New to Old')) {
+      const resultReviews = getUserFilteredReviews(instructorFilterOptions, ratingFilterOptions, timeFilterOptions, sortingChoice)
+      setUserFilteredReviews(resultReviews)
+    }
+  },[instructorFilterOptions, timeFilterOptions, ratingFilterOptions, sortingChoice])
+
 
 
   useEffect(() => {
-    if (sortingLogic) {
-      setSortingChoice(sortingLogic)
-    } 
-    if (isFiltered && checkedInstructors && checkedRatings && checkedTimes) {
-      setInstructorFilterOptions(checkedInstructors);
-      setTimeFilterOptions(checkedTimes)
-      setRatingFilterOptions(checkedRatings)
-      const resultReviews = getUserFilteredReviews(checkedInstructors, checkedRatings, checkedTimes)
-      setUserFilteredReviews(prev => {
-        let sorted;
-        if (sortingLogic) {
-          sorted = sortReviews(resultReviews, sortingLogic)
-        } else {
-          sorted = sortReviews(resultReviews, sortingChoice)
-        }
-        return sorted
-      })
+    const filteredReviews = reviews.filter(review => review.courseId === courseId)
+    const TimeSortedFilteredReviews = sortReviews(filteredReviews, 'New to Old') //sort by time, rating sort happens in getRating Options
+    if (filteredReviews && filteredReviews.length > 0 && initInstructors && initInstructors.length > 0) {
+      setInitCourseReviews(TimeSortedFilteredReviews)
+      getCourseRating(TimeSortedFilteredReviews)
+      const iResult = getInstructorFilterOptions(TimeSortedFilteredReviews, initInstructors)
+      const tResult = getTimeFilterOptions(TimeSortedFilteredReviews)
+      const rResult = getRatingFilterOptions(TimeSortedFilteredReviews)
+      setRatingFilterOptions(rResult)
+      setTempRatingFilterOptions(rResult)
+      setTimeFilterOptions(tResult)
+      setTempTimeFilterOptions(tResult)
+      setInstructorFilterOptions(iResult)
+      setTempInstructorFilterOptions(iResult)
     }
+  }, [reviews, initInstructors])
 
-  }, [isFiltered, sortingLogic])
+
+
+  const courses = useSelector(state => {
+    return state.courses
+  })
+
+  const courseObj = courses.filter(course => course.id === courseId)[0]
+
+  const getCourseRating = (reviews) => {
+    let sum = 0;
+    for (let i = 0; i < reviews.length; i++) {
+        sum += parseInt(reviews[i].rating, 10);
+    }
+    const averageRating = sum / reviews.length;
+    setRating(averageRating)
+  }
+
+
+  
+
   
 
   return (
@@ -255,7 +261,6 @@ function CourseReviewsScreen(props) {
               mode={'contained'}
               labelStyle={{ fontSize: 14 }}
               onPress={() =>{
-                // console.log('!courseObj now', courseObj)
                 navigation.navigate('EditReview', { courseObj: courseObj })
               }}
             >
@@ -266,74 +271,170 @@ function CourseReviewsScreen(props) {
           <View style={{ flexDirection:'row', justifyContent:'space-between'}}>
             <View style={{ flex: 0.4, flexDirection:'row' }}>
               <Text style={[styles.boldLabel, {marginBottom:'5%'}]}>Reviews </Text>
-              <Text style={[styles.boldLabel, {marginBottom:'5%'}]}>({ initCourseReviews && isFiltered && userFilteredReviews ? userFilteredReviews.length : initCourseReviews.length })</Text>
+              <Text style={[styles.boldLabel, {marginBottom:'5%'}]}>({ isFilterActive  && checkFilterResultDiffers(timeFilterOptions, ratingFilterOptions, instructorFilterOptions && userFilteredReviews) ?  userFilteredReviews.length : initCourseReviews.length })</Text>
             </View>
             <View style={{ flex: 0.4, flexDirection:'flex-end' }}>
-            <TouchableOpacity
-                onPress={() => {
-                  // sending!
-                  // console.log(' timeFilterOptions !!', timeFilterOptions)
-                  // console.log('instructorFilterOptions!!', instructorFilterOptions)
-                  // console.log('ratingFilterOptions!!', ratingFilterOptions)
+              <TouchableOpacity onPress={() => setShowFilter(true)}>
+                <View style={{ flexDirection:'row', justifyContent:'space-evenly', alignItems:'center', borderRadius: '50%', backgroundColor: isFilterActive && checkFilterResultDiffers(timeFilterOptions, ratingFilterOptions, instructorFilterOptions) ?  '#FFE3C4' : 'transparent'  }}>
+                  <Text style={{ color: '#4C338F' , fontWeight: sortingChoice === 'New to Old' ? 'normal' : 'bold' }}>{sortingChoice}</Text>
 
-                  if (instructorFilterOptions && instructorFilterOptions.length > 0 && timeFilterOptions && timeFilterOptions.length > 0 && ratingFilterOptions && ratingFilterOptions.length > 0) {
-                    navigation.navigate('ReviewFilter', { instructorFilterOptions: instructorFilterOptions, timeFilterOptions: timeFilterOptions, ratingFilterOptions:ratingFilterOptions, courseId: courseId, sortingChoice: sortingChoice })
-                  }
-                }}
-              >
-            <View style={{ flexDirection:'row', justifyContent:'space-evenly', alignItems:'center', borderRadius: '50%', backgroundColor: isFiltered && (initCourseReviews && userFilteredReviews && initCourseReviews.length !== userFilteredReviews.length)?   '#FFE3C4': 'transparent' }}>
-               <Text style={{ color: '#4C338F' , fontWeight: !sortingLogic || sortingLogic === 'New to Old' ? 'normal' : 'bold' }}>{sortingLogic ? sortingLogic : sortingChoice}</Text>
-
-              {/* <View>
-              <Button
-                mode={'contained'}
-                style={{  backgroundColor:'#5F32D1' }}
-                labelStyle={{ fontSize: 14 }}
-              >
-               sorting
-                <MaterialCommunityIcons name="sort" size={24} style={{ color: '#4C338F',  }} />
-              </Button>
-              </View> */}
-
-              {/* <View style={styles.centeredView}>
-                <Modal
-                  animationType="slide"
-                  transparent={true}
-                  visible={false}
-                 >
-                  <View style={styles.centeredView}>
-                    <View style={styles.modalView}>
-                      {sortingOptions.map((option, index) => (
-                        <TouchableOpacity
-                          onPress={() => {}}
-                          key={index}
-                        >
-                          <Text>666</Text>
-                        </TouchableOpacity>
-
-                      ))}
-                      </View>
+                    <View style={{ borderRadius:'50%', width:40, justifyItems: 'center', alignItems:'center' }}>
+                      <Ionicons name="filter" size={24} style={{ color: '#4C338F',  }} />
                     </View>
-                </Modal>
-              </View> */}
-              
-
-
-                <View style={{ borderRadius:'50%', width:40, justifyItems: 'center', alignItems:'center' }}>
-                  <Ionicons name="filter" size={24} style={{ color: '#4C338F',  }} />
                 </View>
+              </TouchableOpacity>
             </View>
-            </TouchableOpacity>
-            </View>
-
           </View>
+
+          {showFilter ?<View style={styles.centeredView}>
+          <Modal
+            animationType='fade'
+            transparent={true}
+            visible={showFilter}
+            >
+            <View style={styles.centeredView}>
+              <View style={styles.modalView}>
+                {/* sorting */}
+                <Text style={{ fontWeight:'bold', backgroundColor:'#F1EBFF', marginBottom:10 }}>Sort</Text>
+                <FlatList
+                    data={sortingOptions}
+                    renderItem={({item}) => (
+                    <View style={{ flexDirection:'row', alignItems:'center' }}>
+                      <CheckBox
+                          title={`${item.name}`}
+                          checked={item.name === tempSortingChoice ? true : false}
+                          onPress={() => setTempSortingChoice(item.name)}
+                          containerStyle={{ backgroundColor: 'transparent', padding:0 }}
+                          checkedColor="#31BD43"
+                          textStyle={{ fontWeight: item.name === tempSortingChoice ? 'bold' : 'normal' }}
+                      />
+                    </View>
+                    )}
+                    keyExtractor={(item, index) => index.toString()}
+                />
+                {/* instructor filter */}
+                <Text style={{ fontWeight:'bold', backgroundColor:'#F1EBFF', marginBottom:10 }}>Instructors</Text>
+                <FlatList
+                    data={tempInstructorFilterOptions}
+                    renderItem={({item}) => (
+                    <View style={{ flexDirection:'row', alignItems:'center' }}>
+                        <CheckBox
+                            title={`${item.name}`}
+                            checked={item.isChecked}
+                            onPress={() => toggleCheckbox(setTempInstructorFilterOptions, tempInstructorFilterOptions, item)}
+                            textStyle={{ fontWeight: item.isChecked ? 'bold' : 'normal' }}
+                            containerStyle={{ backgroundColor: 'transparent', padding:0 }}
+                            checkedColor="#31BD43"
+                        />
+                    </View>
+                    )}
+                    keyExtractor={item => item.id}
+                />
+                {/* rating filter */}
+                <Text style={{ fontWeight:'bold', backgroundColor:'#F1EBFF', marginBottom:10 }}>Rating</Text>
+                <FlatList
+                  data={tempRatingFilterOptions}
+                  renderItem={({item}) => (
+                  <View style={{ flexDirection:'row', alignItems:'center' }}>
+                      <CheckBox
+                          checked={item.isChecked }
+                          onPress={() => {
+                              toggleCheckbox(setTempRatingFilterOptions, tempRatingFilterOptions, item)
+                          }}
+                          textStyle={{ fontWeight: item.isChecked ? 'bold' : 'normal' }}
+                          title={`${item.rating}`}
+                          containerStyle={{ backgroundColor: 'transparent', padding:0 }}
+                          checkedColor="#31BD43"
+                      />
+                      <StarRating
+                          rating={item.rating}
+                          onChange={() => {}}
+                          starSize={20}
+                          color='#FFCF00'
+                          starStyle={{ marginLeft: 0 }}
+                      />
+                  </View>
+                )}
+                  keyExtractor={item => item.id}
+                />
+                {/* time filter */}
+                <Text style={{ fontWeight:'bold', backgroundColor:'#F1EBFF', marginBottom:10 }}>Time</Text>
+                <FlatList
+                    data={tempTimeFilterOptions}
+                    renderItem={({item}) => (
+                    <View style={{ flexDirection:'row', alignItems:'center' }}>
+                        <CheckBox
+                            checked={item.isChecked}
+                            onPress={() => toggleCheckbox(setTempTimeFilterOptions, tempTimeFilterOptions, item)}
+                            textStyle={{ fontWeight: item.isChecked ? 'bold' : 'normal' }}
+                            title={`${item.time}`}
+                            containerStyle={{ backgroundColor: 'transparent', padding:0 }}
+                            checkedColor="#31BD43"
+                        />
+                    </View>
+                    )}
+                    keyExtractor={item => item.id}
+                />
+
+
+              <View style={ styles.pairButtonContainer}>
+                <Button 
+                    mode='contained' 
+                    style={{ backgroundColor:'#A66319' }}
+                    labelStyle={{ fontSize: 14 }}
+                    onPress={() => {
+                      setShowFilter(false)
+                      setTempInstructorFilterOptions(instructorFilterOptions)
+                      setTempRatingFilterOptions(ratingFilterOptions)
+                      setTempTimeFilterOptions(timeFilterOptions)
+                      setTempSortingChoice(sortingChoice)
+                    }} 
+                >
+                  Cancel
+                </Button>
+                <Button 
+                  mode={'contained'}
+                  style={{  backgroundColor:'#5F32D1' }}
+                  labelStyle={{ fontSize: 14 }}
+                  onPress={() => {
+                    setIsFilterActive(true)
+                    setInstructorFilterOptions(tempInstructorFilterOptions)
+                    setRatingFilterOptions(tempRatingFilterOptions)
+                    setTimeFilterOptions(tempTimeFilterOptions)
+                    setSortingChoice(tempSortingChoice)
+                    setShowFilter(prev => {
+                      if (instructorFilterOptions === tempInstructorFilterOptions && ratingFilterOptions === tempRatingFilterOptions && timeFilterOptions === tempTimeFilterOptions && sortingChoice === tempSortingChoice) {
+                        // console.log('intsurctor options', instructorFilterOptions)
+                        // console.log('temp ins', tempInstructorFilterOptions)
+                        // console.log('rating options', ratingFilterOptions)
+                        // console.log('temp rating', tempRatingFilterOptions)
+                        // console.log('time options', timeFilterOptions)
+                        // console.log('temp time', tempTimeFilterOptions)
+                        return false
+                      } 
+                    })
+                  }}
+                >
+                    Apply
+                </Button>
+              </View>
+                
+
+                </View>
+              </View>
+              
+          </Modal>
+        </View> : null}
+
 
 
 
           <FlatList
-              data={isFiltered ? userFilteredReviews : initCourseReviews } // Provide the data source
+              data={ (isFilterActive && checkFilterResultDiffers(timeFilterOptions, ratingFilterOptions, instructorFilterOptions)) || sortingChoice !== 'New to Old' ? userFilteredReviews : initCourseReviews} // Provide the data source
               renderItem={({ item }) => (
                 <View style={styles.reviewCardContainer}>
+                    {/* {console.log('init course reviews', initCourseReviews)}
+                    {console.log('user filtered course reviews', userFilteredReviews)} */}
                     <View style={styles.userContainer}>
                         <Text style={{ color:'#945610', fontWeight:'bold', marginRight:'4%', fontSize:16 }}>{ initUsers && initUsers.length > 0 && initUsers.filter(user => user.uid === item.userUid)[0]?.name}</Text>
                       {/* {console.log('!! initUsers', initUsers)} */}
@@ -363,10 +464,7 @@ function CourseReviewsScreen(props) {
                               </Text>
                               :
                               <Text style={{ lineHeight:20 }}>{item.reviewContent}</Text>
-                            
-                            
                           }
-                          
 
                       </View>
 
@@ -436,18 +534,43 @@ const styles = StyleSheet.create({
   
     alignSelf: 'center'
   },
+  // centeredView: {
+  //   flex: 1,
+  //   justifyContent: 'center',
+  //   alignItems: 'center',
+  //   marginTop: 22,
+  // },
+  // modalView: {
+  //   margin: 20,
+  //   backgroundColor: 'white',
+  //   borderRadius: 20,
+  //   padding: 35,
+  //   alignItems: 'center',
+  //   shadowColor: '#000',
+  //   shadowOffset: {
+  //     width: 0,
+  //     height: 2,
+  //   },
+  //   shadowOpacity: 0.25,
+  //   shadowRadius: 4,
+  //   elevation: 5,
+  // },
   centeredView: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 22,
+    marginTop: 0,
+    backgroundColor:'rgba(0, 0, 0, 0.6)',
   },
   modalView: {
     margin: 20,
     backgroundColor: 'white',
-    borderRadius: 20,
+    borderRadius: '6%',
     padding: 35,
-    alignItems: 'center',
+    alignItems: 'flex-start',
+    backgroundColor:'#FFF3D4',
+    
+    // justifyContent:'flex-start',
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
