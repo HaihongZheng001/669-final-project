@@ -243,7 +243,7 @@ function CourseReviewsScreen(props) {
       <View style={styles.body}>
           <Text style={styles.boldLabel}>{courseObj.name}</Text>
           <View style={{ flexDirection:'row', alignItems:'center', marginTop:'2%'}}>
-            <Text style={{marginTop: '5%', marginBottom:'4%',marginRight:'2%', color: '#4C338F', fontWeight:'bold' }}>Rating: </Text>
+            <Text style={{marginTop: '5%', marginBottom:'4%',marginRight:'2%', color: '#4C338F', fontWeight:'bold' }}>Overall Rating: </Text>
         
             <StarRating
               rating={rating}
@@ -531,30 +531,8 @@ const styles = StyleSheet.create({
   buttonContainer: {
     marginTop:'5%',
     marginBottom:'15%',
-  
     alignSelf: 'center'
   },
-  // centeredView: {
-  //   flex: 1,
-  //   justifyContent: 'center',
-  //   alignItems: 'center',
-  //   marginTop: 22,
-  // },
-  // modalView: {
-  //   margin: 20,
-  //   backgroundColor: 'white',
-  //   borderRadius: 20,
-  //   padding: 35,
-  //   alignItems: 'center',
-  //   shadowColor: '#000',
-  //   shadowOffset: {
-  //     width: 0,
-  //     height: 2,
-  //   },
-  //   shadowOpacity: 0.25,
-  //   shadowRadius: 4,
-  //   elevation: 5,
-  // },
   centeredView: {
     flex: 1,
     justifyContent: 'center',
@@ -563,12 +541,14 @@ const styles = StyleSheet.create({
     backgroundColor:'rgba(0, 0, 0, 0.6)',
   },
   modalView: {
-    margin: 20,
+    flex:0.8,
+    // margin: '10%',
     backgroundColor: 'white',
     borderRadius: '6%',
-    padding: 35,
+    padding: '5%',
     alignItems: 'flex-start',
-    backgroundColor:'#FFF3D4',
+    width: '90%',
+    backgroundColor:'#FFFAFF',
     
     // justifyContent:'flex-start',
     shadowColor: '#000',
@@ -580,6 +560,13 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 5,
   },
+  pairButtonContainer:{
+    flexDirection:'row',
+    justifyContent:'space-around',
+    // backgroundColor:'pink',
+    width:'100%',
+    
+  }
 });
 
 export default CourseReviewsScreen;
